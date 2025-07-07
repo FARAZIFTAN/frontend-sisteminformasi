@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, UserPlus, GraduationCap } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAlert } from '../contexts/AlertContext';
@@ -18,6 +18,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
     confirmPassword: '',
     ukm: ''
   });
+  const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'Pilih UKM' }]);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -25,17 +26,19 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   const { register, isLoading } = useAuth();
   const { addAlert } = useAlert();
 
-  const ukmOptions = [
-    { value: '', label: 'Pilih UKM' },
-    { value: 'UKM Futsal', label: 'UKM Futsal' },
-    { value: 'UKM Basket', label: 'UKM Basket' },
-    { value: 'UKM Badminton', label: 'UKM Badminton' },
-    { value: 'UKM Seni Tari', label: 'UKM Seni Tari' },
-    { value: 'UKM Musik', label: 'UKM Musik' },
-    { value: 'UKM Teater', label: 'UKM Teater' },
-    { value: 'UKM Pecinta Alam', label: 'UKM Pecinta Alam' },
-    { value: 'UKM Fotografi', label: 'UKM Fotografi' },
-  ];
+  useEffect(() => {
+    // Fetch kategori dari backend
+    fetch('http://localhost:3000/kategori')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUkmOptions([
+            { value: '', label: 'Pilih UKM' },
+            ...data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori }))
+          ]);
+        }
+      });
+  }, []);
 
   const validateForm = () => {
     const newErrors: Record<string, string> = {};
@@ -81,11 +84,9 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
       const success = await register({
         name: formData.name.trim(),
         email: formData.email,
-        ukm: formData.ukm,
-        role: 'user',
-        isActive: true
-      });
-      
+        password: formData.password,
+        ukm: formData.ukm
+     });
       if (success) {
         addAlert({
           type: 'success',
@@ -163,8 +164,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
               value={formData.ukm}
               onChange={(e) => handleInputChange('ukm', e.target.value)}
               error={errors.ukm}
-              options={ukmOptions}
               required
+              options={ukmOptions}
             />
             
             <div className="relative">

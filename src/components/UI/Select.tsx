@@ -30,11 +30,13 @@ const Select: React.FC<SelectProps> = ({
         `}
         {...props}
       >
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
+        {Array.isArray(options) && options.length > 0
+          ? options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))
+          : <option value="">Tidak ada pilihan</option>}
       </select>
       {error && (
         <p className="mt-2 text-sm text-red-600 flex items-center">

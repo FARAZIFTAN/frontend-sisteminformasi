@@ -142,15 +142,6 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
               </button>
             </p>
           </div>
-
-          <div className="mt-6 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-200">
-            <p className="text-sm text-orange-800 font-medium mb-2">Demo Akun:</p>
-            <div className="space-y-1 text-xs text-orange-700">
-              <p><span className="font-medium">Admin:</span> admin@ulbi.ac.id</p>
-              <p><span className="font-medium">User:</span> mahasiswa@ulbi.ac.id</p>
-              <p><span className="font-medium">Password:</span> password</p>
-            </div>
-          </div>
         </div>
       </div>
     </div>

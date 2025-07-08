@@ -5,6 +5,7 @@ import { useAlert } from '../contexts/AlertContext';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Select from '../components/UI/Select';
+import { useNavigate } from 'react-router-dom';
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -25,6 +26,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   
   const { register, isLoading } = useAuth();
   const { addAlert } = useAlert();
+  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch kategori dari backend
@@ -86,12 +88,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
         email: formData.email,
         password: formData.password,
         ukm: formData.ukm
-     });
+      });
       if (success) {
         addAlert({
           type: 'success',
           message: 'Registrasi berhasil! Selamat datang di ULBI UKM System.'
         });
+        navigate('/login');
       } else {
         addAlert({
           type: 'error',

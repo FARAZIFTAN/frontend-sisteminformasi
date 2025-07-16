@@ -5,7 +5,6 @@ import { useAlert } from '../contexts/AlertContext';
 import Button from '../components/UI/Button';
 import Input from '../components/UI/Input';
 import Select from '../components/UI/Select';
-import { useNavigate } from 'react-router-dom';
 
 interface RegisterProps {
   onSwitchToLogin: () => void;
@@ -26,7 +25,6 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
   
   const { register, isLoading } = useAuth();
   const { addAlert } = useAlert();
-  const navigate = useNavigate();
 
   useEffect(() => {
     // Fetch kategori dari backend
@@ -92,18 +90,17 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
       if (success) {
         addAlert({
           type: 'success',
-          message: 'Registrasi berhasil! Silakan login untuk melanjutkan.'
+          message: 'Registrasi berhasil! Silahkan login dengan akun Anda.'
         });
-        // Pilih salah satu aksi berikut sesuai kebutuhan navigasi Anda:
-        // onSwitchToLogin(); // Jika ingin switch ke form login modal
-        navigate('/login'); // Jika ingin redirect ke halaman login
+        // Beralih ke halaman login setelah registrasi berhasil
+        onSwitchToLogin();
       } else {
         addAlert({
           type: 'error',
           message: 'Registrasi gagal. Silakan coba lagi.'
         });
       }
-    } catch (error) {
+    } catch {
       addAlert({
         type: 'error',
         message: 'Terjadi kesalahan. Silakan coba lagi.'

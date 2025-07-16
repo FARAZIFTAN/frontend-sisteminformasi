@@ -22,6 +22,12 @@ import Modal from '../components/UI/Modal';
 
 const Activities: React.FC = () => {
   const { user, token } = useAuth();
+  
+  // Log status user dan token untuk debugging
+  useEffect(() => {
+    console.log("User:", user);
+    console.log("Token tersedia:", !!token);
+  }, [user, token]);
   const { addAlert } = useAlert();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -250,6 +256,12 @@ const Activities: React.FC = () => {
         body.maxParticipants = parseInt(formData.maxParticipants);
       }
       if (isFormMode === 'create') {
+        // Tambahkan status default untuk kegiatan baru
+        body.status = 'upcoming'; 
+        
+        console.log("Mengirim data kegiatan baru:", body);
+        console.log("Token:", token);
+        
         const res = await fetch('http://localhost:3000/kegiatan', {
           method: 'POST',
           headers: {
@@ -258,7 +270,11 @@ const Activities: React.FC = () => {
           },
           body: JSON.stringify(body)
         });
+        
+        console.log("Response status:", res.status);
         const data = await res.json();
+        console.log("Response data:", data);
+        
         if (!res.ok) {
           console.log('BACKEND ERROR:', data);
           addAlert({ type: 'error', message: data.error || JSON.stringify(data) || 'Gagal membuat kegiatan' });

@@ -94,11 +94,9 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
           type: 'success',
           message: 'Registrasi berhasil! Silakan login untuk melanjutkan.'
         });
-<<<<<<< HEAD
-        onSwitchToLogin();
-=======
-        navigate('/login');
->>>>>>> ba533139672ecbe1cbddce77fc76c7a8128d2ec2
+        // Pilih salah satu aksi berikut sesuai kebutuhan navigasi Anda:
+        // onSwitchToLogin(); // Jika ingin switch ke form login modal
+        navigate('/login'); // Jika ingin redirect ke halaman login
       } else {
         addAlert({
           type: 'error',

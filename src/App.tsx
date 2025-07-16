@@ -14,15 +14,10 @@ const AppContent: React.FC = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
 
   if (!user) {
-    return (
-      <div>
-        <AlertContainer />
-        {authMode === 'login' ? (
-          <Login onSwitchToRegister={() => setAuthMode('register')} />
-        ) : (
-          <Register onSwitchToLogin={() => setAuthMode('login')} />
-        )}
-      </div>
+    return authMode === 'login' ? (
+      <Login onSwitchToRegister={() => setAuthMode('register')} />
+    ) : (
+      <Register onSwitchToLogin={() => setAuthMode('login')} />
     );
   }
 
@@ -66,23 +61,33 @@ const AppContent: React.FC = () => {
   };
 
   return (
-    <div>
-      <AlertContainer />
-      <Layout activeTab={activeTab} onTabChange={setActiveTab}>
-        {renderContent()}
-      </Layout>
-    </div>
+    <Layout activeTab={activeTab} onTabChange={setActiveTab}>
+      {renderContent()}
+    </Layout>
   );
 };
+
 
 function App() {
   return (
     <AuthProvider>
       <AlertProvider>
+        <AlertContainer />
         <AppContent />
       </AlertProvider>
     </AuthProvider>
   );
 }
+// Jika Anda mengalami error net::ERR_INSUFFICIENT_RESOURCES pada icon lucide-react,
+// lakukan langkah berikut di terminal pada folder project ini:
+// 1. Tutup tab browser yang tidak perlu dan restart browser.
+// 2. Jalankan:
+//    rmdir /s /q node_modules
+//    del package-lock.json
+//    npm install
+// 3. Pastikan koneksi internet stabil dan tidak ada error lain di console.
+// 4. Jika masih error, restart komputer Anda.
+//
+// Ini bukan bug pada kode App.tsx, tapi masalah resource/instalasi dependency di sistem Anda.
 
 export default App;

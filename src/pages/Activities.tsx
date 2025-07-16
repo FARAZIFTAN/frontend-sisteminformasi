@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
@@ -20,63 +20,18 @@ import Input from '../components/UI/Input';
 import Select from '../components/UI/Select';
 import Modal from '../components/UI/Modal';
 
-// Mock data
-const mockActivities: Activity[] = [
-  {
-    id: '1',
-    title: 'Turnamen Futsal Antar UKM',
-    description: 'Kompetisi futsal untuk mempererat tali persaudaraan antar UKM di lingkungan ULBI',
-    date: '2024-01-15',
-    time: '09:00',
-    location: 'Lapangan Futsal ULBI',
-    category: 'olahraga',
-    ukm: 'UKM Futsal',
-    status: 'upcoming',
-    createdBy: '1',
-    attendees: ['1', '2'],
-    maxParticipants: 20,
-    documentation: 'https://drive.google.com/file/example'
-  },
-  {
-    id: '2',
-    title: 'Workshop Fotografi Landscape',
-    description: 'Belajar teknik fotografi landscape untuk pemula hingga menengah',
-    date: '2024-01-18',
-    time: '14:00',
-    location: 'Studio Fotografi ULBI',
-    category: 'seni',
-    ukm: 'UKM Fotografi',
-    status: 'upcoming',
-    createdBy: '1',
-    attendees: ['1'],
-    maxParticipants: 15
-  },
-  {
-    id: '3',
-    title: 'Bakti Sosial Desa Sukamaju',
-    description: 'Kegiatan berbagi dengan masyarakat sekitar kampus',
-    date: '2024-01-10',
-    time: '08:00',
-    location: 'Desa Sukamaju',
-    category: 'sosial',
-    ukm: 'UKM Pecinta Alam',
-    status: 'completed',
-    createdBy: '1',
-    attendees: ['1', '2'],
-    maxParticipants: 25
-  }
-];
-
 const Activities: React.FC = () => {
-  const { user } = useAuth();
+  const { user, token } = useAuth();
   const { addAlert } = useAlert();
-  const [activities, setActivities] = useState<Activity[]>(mockActivities);
+  const [activities, setActivities] = useState<Activity[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [ukmFilter, setUkmFilter] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedActivity, setSelectedActivity] = useState<Activity | null>(null);
   const [isFormMode, setIsFormMode] = useState<'create' | 'edit' | 'view'>('view');
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     title: '',
@@ -84,11 +39,67 @@ const Activities: React.FC = () => {
     date: '',
     time: '',
     location: '',
-    category: 'sosial' as Activity['category'],
-    ukm: user?.ukm || '',
+    ukm: '',
     maxParticipants: '',
-    documentation: ''
+    documentation: '' // kembalikan field documentation
   });
+
+  // Fetch kategori dari backend, tapi gunakan sebagai UKM
+  const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([]);
+  useEffect(() => {
+    fetch('http://localhost:3000/kategori')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUkmOptions(data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori })));
+        }
+      })
+      .catch(() => setUkmOptions([]));
+  }, []);
+
+  // Fungsi fetchActivities tunggal dan konsisten
+  const fetchActivities = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('http://localhost:3000/kegiatan', {
+        headers: {
+          'Authorization': token ? `Bearer ${token}` : ''
+        }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Gagal mengambil data kegiatan');
+      }
+      const data = await res.json();
+      setActivities(data.map((item: any) => {
+        // Mapping field dengan fallback dan normalisasi tipe data
+        return {
+          id: item.id || item._id || item.id_kegiatan || '',
+          title: item.judul || item.title || '',
+          description: item.deskripsi || item.description || '',
+          date: item.tanggal || item.date || '',
+          time: item.waktu || item.time || '',
+          location: item.lokasi || item.location || '',
+          ukm: item.kategori || item.ukm || '',
+          maxParticipants: typeof item.maxParticipants === 'number' ? item.maxParticipants : (parseInt(item.maxParticipants) || ''),
+          documentation: item.dokumentasi_url || item.documentation || '',
+          status: item.status || '',
+          attendees: Array.isArray(item.attendees) ? item.attendees : [],
+        };
+      }));
+    } catch (err: any) {
+      setError(err.message || 'Gagal mengambil data kegiatan');
+      addAlert({ type: 'error', message: err.message || 'Gagal mengambil data kegiatan' });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (token) fetchActivities();
+    // eslint-disable-next-line
+  }, [token]);
 
   const statusOptions = [
     { value: '', label: 'Semua Status' },
@@ -98,27 +109,20 @@ const Activities: React.FC = () => {
     { value: 'cancelled', label: 'Dibatalkan' }
   ];
 
-  const ukmOptions = [
-    { value: '', label: 'Semua UKM' },
-    { value: 'UKM Futsal', label: 'UKM Futsal' },
-    { value: 'UKM Basket', label: 'UKM Basket' },
-    { value: 'UKM Fotografi', label: 'UKM Fotografi' },
-    { value: 'UKM Pecinta Alam', label: 'UKM Pecinta Alam' }
-  ];
-
-  const categoryOptions = [
-    { value: 'sosial', label: 'Sosial' },
-    { value: 'seni', label: 'Seni' },
-    { value: 'olahraga', label: 'Olahraga' },
-    { value: 'akademik', label: 'Akademik' }
-  ];
+  // Ambil UKM unik dari data kegiatan
+  type UkmOption = { value: string; label: string };
+  const [uniqueUkmOptions, setUniqueUkmOptions] = useState<UkmOption[]>([{ value: '', label: 'Semua UKM' }]);
+  useEffect(() => {
+    const uniqueUKM = Array.from(new Set(activities.map((a) => a.ukm).filter(Boolean)));
+    setUniqueUkmOptions([{ value: '', label: 'Semua UKM' }, ...uniqueUKM.map((ukm) => ({ value: ukm, label: ukm }))]);
+  }, [activities]);
 
   const filteredActivities = activities.filter(activity => {
-    const matchesSearch = activity.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         activity.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      ((activity.title ? activity.title : '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (activity.description ? activity.description : '').toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = !statusFilter || activity.status === statusFilter;
     const matchesUKM = !ukmFilter || activity.ukm === ukmFilter;
-    
     return matchesSearch && matchesStatus && matchesUKM;
   });
 
@@ -152,21 +156,6 @@ const Activities: React.FC = () => {
     }
   };
 
-  const getCategoryBadge = (category: Activity['category']) => {
-    switch (category) {
-      case 'sosial':
-        return 'bg-gradient-to-r from-green-100 to-emerald-200 text-green-800';
-      case 'seni':
-        return 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-800';
-      case 'olahraga':
-        return 'bg-gradient-to-r from-orange-100 to-orange-200 text-orange-800';
-      case 'akademik':
-        return 'bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800';
-      default:
-        return 'bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800';
-    }
-  };
-
   const handleCreateActivity = () => {
     setIsFormMode('create');
     setFormData({
@@ -175,10 +164,9 @@ const Activities: React.FC = () => {
       date: '',
       time: '',
       location: '',
-      category: 'sosial',
-      ukm: user?.ukm || '',
+      ukm: '',
       maxParticipants: '',
-      documentation: ''
+      documentation: '' // kembalikan field documentation
     });
     setSelectedActivity(null);
     setIsModalOpen(true);
@@ -194,64 +182,114 @@ const Activities: React.FC = () => {
     setSelectedActivity(activity);
     setIsFormMode('edit');
     setFormData({
-      title: activity.title,
-      description: activity.description,
-      date: activity.date,
-      time: activity.time,
-      location: activity.location,
-      category: activity.category,
-      ukm: activity.ukm,
-      maxParticipants: activity.maxParticipants?.toString() || '',
+      title: activity.title || '',
+      description: activity.description || '',
+      date: activity.date || '',
+      time: activity.time || '',
+      location: activity.location || '',
+      ukm: activity.ukm || '',
+      maxParticipants: activity.maxParticipants !== undefined && activity.maxParticipants !== null ? activity.maxParticipants.toString() : '',
       documentation: activity.documentation || ''
     });
     setIsModalOpen(true);
   };
 
-  const handleDeleteActivity = (activityId: string) => {
+  const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+  // ...fungsi fetchActivities sudah didefinisikan di atas, hapus duplikasi...
+
+  const handleDeleteActivity = async (activityId: string) => {
+    if (!token) return;
     if (window.confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-      setActivities(prev => prev.filter(activity => activity.id !== activityId));
-      addAlert({
-        type: 'success',
-        message: 'Kegiatan berhasil dihapus'
-      });
+      setDeleteLoadingId(activityId);
+      try {
+        const res = await fetch(`http://localhost:3000/kegiatan/${activityId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || 'Gagal menghapus kegiatan');
+        }
+        await fetchActivities();
+        addAlert({
+          type: 'success',
+          message: 'Kegiatan berhasil dihapus'
+        });
+      } catch (err: any) {
+        addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
+      } finally {
+        setDeleteLoadingId(null);
+      }
     }
   };
 
-  const handleSubmitForm = (e: React.FormEvent) => {
+  const [submitLoading, setSubmitLoading] = useState(false);
+  const handleSubmitForm = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (isFormMode === 'create') {
-      const newActivity: Activity = {
-        id: Date.now().toString(),
-        ...formData,
-        status: 'upcoming',
-        createdBy: user?.id || '',
-        attendees: [],
-        maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined
-      };
-      
-      setActivities(prev => [...prev, newActivity]);
-      addAlert({
-        type: 'success',
-        message: 'Kegiatan berhasil dibuat'
-      });
-    } else if (isFormMode === 'edit' && selectedActivity) {
-      const updatedActivity: Activity = {
-        ...selectedActivity,
-        ...formData,
-        maxParticipants: formData.maxParticipants ? parseInt(formData.maxParticipants) : undefined
-      };
-      
-      setActivities(prev => prev.map(activity => 
-        activity.id === selectedActivity.id ? updatedActivity : activity
-      ));
-      addAlert({
-        type: 'success',
-        message: 'Kegiatan berhasil diperbarui'
-      });
+    if (!token) return;
+    // Validasi sederhana
+    if (!formData.title.trim() || !formData.description.trim() || !formData.date || !formData.time || !formData.location || !formData.ukm) {
+      addAlert({ type: 'error', message: 'Semua field wajib diisi!' });
+      return;
     }
-    
-    setIsModalOpen(false);
+    setSubmitLoading(true);
+    try {
+      // Siapkan body request tanpa field undefined/null
+      const body: any = {
+        judul: formData.title, // title -> judul
+        deskripsi: formData.description, // description -> deskripsi
+        tanggal: formData.date, // date -> tanggal
+        waktu: formData.time, // time -> waktu
+        lokasi: formData.location, // location -> lokasi
+        kategori: formData.ukm,
+        dokumentasi_url: formData.documentation
+      };
+      if (formData.maxParticipants && !isNaN(Number(formData.maxParticipants))) {
+        body.maxParticipants = parseInt(formData.maxParticipants);
+      }
+      if (isFormMode === 'create') {
+        const res = await fetch('http://localhost:3000/kegiatan', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          console.log('BACKEND ERROR:', data);
+          addAlert({ type: 'error', message: data.error || JSON.stringify(data) || 'Gagal membuat kegiatan' });
+          throw new Error(data.error || 'Gagal membuat kegiatan');
+        }
+        await fetchActivities();
+        addAlert({ type: 'success', message: 'Kegiatan berhasil dibuat' });
+      } else if (isFormMode === 'edit' && selectedActivity) {
+        const res = await fetch(`http://localhost:3000/kegiatan/${selectedActivity.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify(body)
+        });
+        const data = await res.json();
+        if (!res.ok) {
+          console.log('BACKEND ERROR:', data);
+          addAlert({ type: 'error', message: data.error || JSON.stringify(data) || 'Gagal memperbarui kegiatan' });
+          throw new Error(data.error || 'Gagal memperbarui kegiatan');
+        }
+        await fetchActivities();
+        addAlert({ type: 'success', message: 'Kegiatan berhasil diperbarui' });
+      }
+      setIsModalOpen(false);
+    } catch (err: any) {
+      addAlert({ type: 'error', message: err.message || 'Gagal memproses kegiatan' });
+    } finally {
+      setSubmitLoading(false);
+    }
   };
 
   const renderActivityForm = () => (
@@ -304,21 +342,6 @@ const Activities: React.FC = () => {
           required
         />
         
-        <Select
-          label="Kategori"
-          value={formData.category}
-          onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value as Activity['category'] }))}
-          options={categoryOptions}
-        />
-        
-        <Input
-          label="UKM"
-          type="text"
-          value={formData.ukm}
-          onChange={(e) => setFormData(prev => ({ ...prev, ukm: e.target.value }))}
-          required
-        />
-        
         <Input
           label="Maksimal Peserta"
           type="number"
@@ -327,6 +350,16 @@ const Activities: React.FC = () => {
           placeholder="Kosongkan jika tidak terbatas"
         />
         
+        <div className="md:col-span-2">
+          <Select
+            label="UKM"
+            value={formData.ukm}
+            onChange={(e) => setFormData(prev => ({ ...prev, ukm: e.target.value }))}
+            options={ukmOptions}
+            required
+          />
+        </div>
+
         <div className="md:col-span-2">
           <Input
             label="Link Dokumentasi"
@@ -346,12 +379,63 @@ const Activities: React.FC = () => {
         >
           Batal
         </Button>
-        <Button type="submit">
+        <Button type="submit" loading={submitLoading} disabled={submitLoading}>
           {isFormMode === 'create' ? 'Buat Kegiatan' : 'Perbarui Kegiatan'}
         </Button>
       </div>
     </form>
   );
+
+  const [absenLoading, setAbsenLoading] = useState(false);
+  const [absenSuccess, setAbsenSuccess] = useState(false);
+  const handleAbsen = async () => {
+    if (!token || !user || !selectedActivity) {
+      addAlert({ type: 'error', message: 'User atau kegiatan tidak valid.' });
+      return;
+    }
+    if (!selectedActivity.id || !user.id) {
+      addAlert({ type: 'error', message: 'ID user atau kegiatan kosong.' });
+      return;
+    }
+    setAbsenLoading(true);
+    try {
+      // Cek jika sudah absen (berdasarkan attendees)
+      if (Array.isArray(selectedActivity.attendees) && selectedActivity.attendees.includes(user.id)) {
+        addAlert({ type: 'info', message: 'Anda sudah absen pada kegiatan ini.' });
+        setAbsenLoading(false);
+        setAbsenSuccess(true);
+        return;
+      }
+      const res = await fetch('http://localhost:3000/kehadiran', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          kegiatan_id: selectedActivity.id,
+          user_id: user.id,
+          status: 'present'
+        })
+      });
+      let data = {};
+      try {
+        data = await res.json();
+      } catch (e) {}
+      if (!res.ok) {
+        addAlert({ type: 'error', message: data.error || 'Gagal absen (400 Bad Request). Pastikan data yang dikirim sudah benar dan id tidak kosong.' });
+        throw new Error(data.error || 'Gagal absen');
+      }
+      setAbsenSuccess(true);
+      addAlert({ type: 'success', message: 'Absen berhasil!' });
+      // Update attendees di UI (optimistic update)
+      setActivities(prev => prev.map(act => act.id === selectedActivity.id ? { ...act, attendees: [...(act.attendees || []), user.id] } : act));
+    } catch (err: any) {
+      addAlert({ type: 'error', message: err.message || 'Gagal absen' });
+    } finally {
+      setAbsenLoading(false);
+    }
+  };
 
   const renderActivityDetails = () => (
     <div className="space-y-6">
@@ -363,7 +447,6 @@ const Activities: React.FC = () => {
           {selectedActivity?.description}
         </p>
       </div>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-4">
           <div className="flex items-center p-3 bg-orange-50 rounded-xl">
@@ -372,14 +455,12 @@ const Activities: React.FC = () => {
               {selectedActivity && new Date(selectedActivity.date).toLocaleDateString('id-ID')}
             </span>
           </div>
-          
           <div className="flex items-center p-3 bg-blue-50 rounded-xl">
             <Clock className="h-5 w-5 text-blue-600 mr-3" />
             <span className="text-sm font-medium text-gray-700">
               {selectedActivity?.time}
             </span>
           </div>
-          
           <div className="flex items-center p-3 bg-green-50 rounded-xl">
             <MapPin className="h-5 w-5 text-green-600 mr-3" />
             <span className="text-sm font-medium text-gray-700">
@@ -387,42 +468,32 @@ const Activities: React.FC = () => {
             </span>
           </div>
         </div>
-        
         <div className="space-y-4">
           <div className="flex items-center p-3 bg-purple-50 rounded-xl">
             <Users className="h-5 w-5 text-purple-600 mr-3" />
             <span className="text-sm font-medium text-gray-700">
-              {selectedActivity?.attendees.length}/{selectedActivity?.maxParticipants || 'Unlimited'} peserta
+              {(Array.isArray(selectedActivity?.attendees) ? selectedActivity.attendees.length : 0)}/{selectedActivity?.maxParticipants || 'Unlimited'} peserta
             </span>
           </div>
-          
           <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
             <span className="text-sm font-medium text-gray-700">Status:</span>
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(selectedActivity?.status || 'upcoming')}`}>
               {getStatusText(selectedActivity?.status || 'upcoming')}
             </span>
           </div>
-          
-          <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-            <span className="text-sm font-medium text-gray-700">Kategori:</span>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getCategoryBadge(selectedActivity?.category || 'sosial')}`}>
-              {selectedActivity?.category}
-            </span>
-          </div>
         </div>
       </div>
-      
-      {selectedActivity?.documentation && (
-        <div className="p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-xl border border-orange-200">
-          <span className="text-sm font-medium text-gray-700">Dokumentasi:</span>
-          <a
-            href={selectedActivity.documentation}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-orange-600 hover:text-orange-700 text-sm font-semibold ml-2 hover:underline"
+      {/* Tombol absen untuk user non-admin */}
+      {user && user.role !== 'admin' && selectedActivity && (
+        <div className="pt-4">
+          <Button
+            onClick={handleAbsen}
+            loading={absenLoading}
+            disabled={absenSuccess || (Array.isArray(selectedActivity.attendees) && selectedActivity.attendees.includes(user.id))}
+            className="w-full"
           >
-            Lihat Dokumentasi
-          </a>
+            {absenSuccess || (Array.isArray(selectedActivity.attendees) && selectedActivity.attendees.includes(user.id)) ? 'Sudah Absen' : 'Absen Sekarang'}
+          </Button>
         </div>
       )}
     </div>
@@ -430,6 +501,12 @@ const Activities: React.FC = () => {
 
   return (
     <div className="space-y-8">
+      {loading && (
+        <div className="text-center text-orange-600 font-semibold">Memuat data kegiatan...</div>
+      )}
+      {error && (
+        <div className="text-center text-red-600 font-semibold">{error}</div>
+      )}
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -467,7 +544,7 @@ const Activities: React.FC = () => {
           <Select
             value={ukmFilter}
             onChange={(e) => setUkmFilter(e.target.value)}
-            options={ukmOptions}
+            options={uniqueUkmOptions}
           />
         </div>
       </div>
@@ -502,7 +579,7 @@ const Activities: React.FC = () => {
                 </div>
                 <div className="flex items-center text-sm text-gray-600">
                   <Users className="h-4 w-4 mr-2 text-orange-500" />
-                  {activity.attendees.length}/{activity.maxParticipants || '∞'} peserta
+                  {(Array.isArray(activity.attendees) ? activity.attendees.length : 0)}/{activity.maxParticipants || '∞'} peserta
                 </div>
               </div>
               
@@ -526,7 +603,11 @@ const Activities: React.FC = () => {
                       <button
                         onClick={() => handleDeleteActivity(activity.id)}
                         className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                        disabled={deleteLoadingId === activity.id}
                       >
+                        {deleteLoadingId === activity.id ? (
+                          <span className="animate-spin inline-block mr-1">⏳</span>
+                        ) : null}
                         <Trash2 className="h-4 w-4" />
                       </button>
                     </>

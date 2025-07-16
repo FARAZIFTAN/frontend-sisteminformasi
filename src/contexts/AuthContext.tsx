@@ -3,6 +3,7 @@ import { User } from '../types';
 
 interface AuthContextType {
   user: User | null;
+  token: string | null;
   login: (email: string, password: string) => Promise<boolean>;
   register: (userData: RegisterData) => Promise<boolean>;
   logout: () => void;
@@ -20,13 +21,18 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
     const storedUser = localStorage.getItem('user');
+    const storedToken = localStorage.getItem('token');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+    }
+    if (storedToken) {
+      setToken(storedToken);
     }
     setIsLoading(false);
   }, []);
@@ -42,8 +48,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await res.json();
       if (res.ok && data.token) {
         setUser(data.user);
+        setToken(data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        // Simpan token jika perlu: localStorage.setItem('token', data.token);
+        localStorage.setItem('token', data.token);
         setIsLoading(false);
         return true;
       } else {
@@ -91,12 +98,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = () => {
     setUser(null);
+    setToken(null);
     localStorage.removeItem('user');
-    // localStorage.removeItem('token');
+    localStorage.removeItem('token');
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, login, register, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

@@ -15,7 +15,7 @@ export const AlertProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addAlert = useCallback((alert: Omit<AlertType, 'id'>) => {
     const newAlert: AlertType = {
       ...alert,
-      id: Date.now().toString()
+      id: Date.now().toString() + '-' + Math.random().toString(36).substr(2, 9) // id unik
     };
     
     setAlerts(prev => [...prev, newAlert]);

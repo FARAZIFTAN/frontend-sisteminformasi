@@ -86,12 +86,13 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
         email: formData.email,
         password: formData.password,
         ukm: formData.ukm
-     });
+      });
       if (success) {
         addAlert({
           type: 'success',
-          message: 'Registrasi berhasil! Selamat datang di ULBI UKM System.'
+          message: 'Registrasi berhasil! Silakan login untuk melanjutkan.'
         });
+        onSwitchToLogin();
       } else {
         addAlert({
           type: 'error',

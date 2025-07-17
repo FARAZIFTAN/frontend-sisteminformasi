@@ -60,15 +60,18 @@ const Statistics: React.FC = () => {
     { value: 'lastYear', label: 'Tahun Lalu' }
   ];
 
-  const ukmOptions = [
-    { value: 'all', label: 'Semua UKM' },
-    { value: 'UKM Futsal', label: 'UKM Futsal' },
-    { value: 'UKM Basket', label: 'UKM Basket' },
-    { value: 'UKM Fotografi', label: 'UKM Fotografi' },
-    { value: 'UKM Musik', label: 'UKM Musik' },
-    { value: 'UKM Pecinta Alam', label: 'UKM Pecinta Alam' },
-    { value: 'UKM Seni', label: 'UKM Seni' }
-  ];
+  const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: 'all', label: 'Semua UKM' }]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/kategori')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUkmOptions([{ value: 'all', label: 'Semua UKM' }, ...data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori }))]);
+        }
+      })
+      .catch(() => setUkmOptions([{ value: 'all', label: 'Semua UKM' }]));
+  }, []);
 
   const fetchStatistics = useCallback(async () => {
     if (!token) return;

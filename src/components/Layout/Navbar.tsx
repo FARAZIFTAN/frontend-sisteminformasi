@@ -1,5 +1,5 @@
 import React from 'react';
-import { Menu, Bell, User, LogOut } from 'lucide-react';
+import { Menu, LogOut } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface NavbarProps {
@@ -36,11 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="relative p-2 rounded-full text-gray-600 hover:text-orange-600 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors">
-              <Bell className="h-6 w-6" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-orange-500 rounded-full"></span>
-            </button>
-            
+            {/* Notifikasi dihapus */}
             <div className="relative group">
               <button className="flex items-center space-x-3 p-2 rounded-xl text-gray-600 hover:text-orange-600 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-all duration-200">
                 <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-orange-500 rounded-lg flex items-center justify-center text-white text-sm font-medium">

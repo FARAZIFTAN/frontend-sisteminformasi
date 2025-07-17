@@ -57,15 +57,18 @@ const Members: React.FC = () => {
     { value: 'member', label: 'Member' }
   ];
 
-  const ukmOptions = [
-    { value: '', label: 'Semua UKM' },
-    { value: 'UKM Futsal', label: 'UKM Futsal' },
-    { value: 'UKM Basket', label: 'UKM Basket' },
-    { value: 'UKM Fotografi', label: 'UKM Fotografi' },
-    { value: 'UKM Musik', label: 'UKM Musik' },
-    { value: 'UKM Pecinta Alam', label: 'UKM Pecinta Alam' },
-    { value: 'UKM Seni', label: 'UKM Seni' }
-  ];
+  const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'Semua UKM' }]);
+
+  useEffect(() => {
+    fetch('http://localhost:3000/kategori')
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setUkmOptions([{ value: '', label: 'Semua UKM' }, ...data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori }))]);
+        }
+      })
+      .catch(() => setUkmOptions([{ value: '', label: 'Semua UKM' }]));
+  }, []);
 
   const fetchMembers = async () => {
     if (!token) return;

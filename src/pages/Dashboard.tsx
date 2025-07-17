@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
   Calendar, 
   Users, 
@@ -11,61 +11,59 @@ import {
   Activity
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
+import { useAlert } from '../contexts/AlertContext';
 import { Activity as ActivityType } from '../types';
 
 // Mock data for demonstration
-const mockActivities: ActivityType[] = [
-  {
-    id: '1',
-    title: 'Turnamen Futsal Antar UKM',
-    description: 'Kompetisi futsal untuk mempererat tali persaudaraan',
-    date: '2024-01-15',
-    time: '09:00',
-    location: 'Lapangan Futsal ULBI',
-    category: 'olahraga',
-    ukm: 'UKM Futsal',
-    status: 'upcoming',
-    createdBy: '1',
-    attendees: ['1', '2'],
-    maxParticipants: 20
-  },
-  {
-    id: '2',
-    title: 'Workshop Fotografi',
-    description: 'Belajar teknik fotografi dasar untuk pemula',
-    date: '2024-01-18',
-    time: '14:00',
-    location: 'Studio Fotografi ULBI',
-    category: 'seni',
-    ukm: 'UKM Fotografi',
-    status: 'upcoming',
-    createdBy: '1',
-    attendees: ['1'],
-    maxParticipants: 15
-  },
-  {
-    id: '3',
-    title: 'Bakti Sosial',
-    description: 'Kegiatan berbagi dengan masyarakat sekitar',
-    date: '2024-01-10',
-    time: '08:00',
-    location: 'Desa Sukamaju',
-    category: 'sosial',
-    ukm: 'UKM Pecinta Alam',
-    status: 'completed',
-    createdBy: '1',
-    attendees: ['1', '2'],
-    maxParticipants: 25
-  }
-];
+// ...existing code...
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  
+  const { addAlert } = useAlert();
+  const [activities, setActivities] = useState<ActivityType[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    fetch('http://localhost:3000/kegiatan', {
+      headers: {
+        'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
+      }
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (Array.isArray(data)) {
+          setActivities(data.map((item: any) => ({
+            id: item.id || item._id || item.id_kegiatan || '',
+            title: item.judul || item.title || '',
+            description: item.deskripsi || item.description || '',
+            date: item.tanggal || item.date || '',
+            time: item.waktu || item.time || '',
+            location: item.lokasi || item.location || '',
+            ukm: item.kategori || item.ukm || '',
+            status: item.status || '',
+            attendees: Array.isArray(item.attendees) ? item.attendees : [],
+            maxParticipants: typeof item.maxParticipants === 'number' ? item.maxParticipants : (parseInt(item.maxParticipants) || ''),
+          })));
+        } else {
+          setActivities([]);
+        }
+      })
+      .catch(() => setActivities([]))
+      .finally(() => setLoading(false));
+  }, []);
+
+  // Filter kegiatan sesuai role
+  const visibleActivities = user?.role === 'admin'
+    ? activities
+    : activities.filter(a => a.ukm === user?.ukm);
+
   const stats = [
     {
       name: 'Total Kegiatan',
-      value: mockActivities.length,
+      value: visibleActivities.length,
       icon: Calendar,
       color: 'from-orange-500 to-orange-600',
       bgColor: 'from-orange-50 to-orange-100',
@@ -74,7 +72,7 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Kegiatan Mendatang',
-      value: mockActivities.filter(a => a.status === 'upcoming').length,
+      value: visibleActivities.filter(a => a.status === 'upcoming').length,
       icon: Clock,
       color: 'from-blue-500 to-blue-600',
       bgColor: 'from-blue-50 to-blue-100',
@@ -83,7 +81,7 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Kegiatan Selesai',
-      value: mockActivities.filter(a => a.status === 'completed').length,
+      value: visibleActivities.filter(a => a.status === 'completed').length,
       icon: UserCheck,
       color: 'from-green-500 to-green-600',
       bgColor: 'from-green-50 to-green-100',
@@ -92,7 +90,7 @@ const Dashboard: React.FC = () => {
     },
     {
       name: 'Total Peserta',
-      value: mockActivities.reduce((acc, activity) => acc + activity.attendees.length, 0),
+      value: visibleActivities.reduce((acc, activity) => acc + (Array.isArray(activity.attendees) ? activity.attendees.length : 0), 0),
       icon: Users,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'from-purple-50 to-purple-100',
@@ -190,10 +188,11 @@ const Dashboard: React.FC = () => {
             </button>
           </div>
         </div>
-        
         <div className="p-6">
+          {loading && <div className="text-orange-600">Memuat data kegiatan...</div>}
+          {error && <div className="text-red-600">{error}</div>}
           <div className="space-y-4">
-            {mockActivities.slice(0, 3).map((activity) => (
+            {visibleActivities.slice(0, 3).map((activity) => (
               <div key={activity.id} className="border-2 border-gray-100 rounded-xl p-6 hover:shadow-lg hover:border-orange-200 transition-all duration-300 group">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -204,7 +203,6 @@ const Dashboard: React.FC = () => {
                       </span>
                     </div>
                     <p className="text-gray-600 mb-4">{activity.description}</p>
-                    
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-2 text-orange-500" />
@@ -219,7 +217,6 @@ const Dashboard: React.FC = () => {
                         {activity.location}
                       </div>
                     </div>
-                    
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center space-x-2">
                         <span className="text-sm text-gray-500">UKM:</span>
@@ -228,12 +225,11 @@ const Dashboard: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         <Users className="h-4 w-4 text-gray-500" />
                         <span className="text-sm text-gray-500">
-                          {activity.attendees.length}/{activity.maxParticipants || '∞'}
+                          {Array.isArray(activity.attendees) ? activity.attendees.length : 0}/{activity.maxParticipants || '∞'}
                         </span>
                       </div>
                     </div>
                   </div>
-                  
                   <button className="ml-4 p-3 text-gray-400 hover:text-orange-600 rounded-xl hover:bg-orange-50 transition-colors">
                     <Eye className="h-5 w-5" />
                   </button>

@@ -129,6 +129,7 @@ const Activities: React.FC = () => {
       (activity.description ? activity.description : '').toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesStatus = !statusFilter || activity.status === statusFilter;
     const matchesUKM = !ukmFilter || activity.ukm === ukmFilter;
+    // Semua user (admin dan user biasa) bisa melihat semua kegiatan dari semua UKM
     return matchesSearch && matchesStatus && matchesUKM;
   });
 
@@ -628,29 +629,12 @@ const Activities: React.FC = () => {
                   <button
                     onClick={() => handleViewActivity(activity)}
                     className="p-2 text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                    title="Lihat Detail Kegiatan"
                   >
                     <Eye className="h-4 w-4" />
                   </button>
-                  {user?.role === 'admin' && (
-                    <>
-                      <button
-                        onClick={() => handleEditActivity(activity)}
-                        className="p-2 text-green-600 hover:text-green-700 hover:bg-green-50 rounded-lg transition-colors"
-                      >
-                        <Edit3 className="h-4 w-4" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteActivity(activity.id)}
-                        className="p-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                        disabled={deleteLoadingId === activity.id}
-                      >
-                        {deleteLoadingId === activity.id ? (
-                          <span className="animate-spin inline-block mr-1">⏳</span>
-                        ) : null}
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </>
-                  )}
+                  {/* Tombol edit dan hapus hanya untuk admin */}
+                  {/* ...hanya admin yang bisa edit dan hapus... */}
                 </div>
               </div>
             </div>

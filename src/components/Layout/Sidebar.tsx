@@ -26,7 +26,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
     { id: 'attendance', label: 'Kehadiran', icon: UserCheck, adminOnly: false },
     { id: 'members', label: 'Anggota', icon: Users, adminOnly: true },
     { id: 'statistics', label: 'Statistik', icon: BarChart3, adminOnly: true },
-    { id: 'settings', label: 'Pengaturan', icon: Settings, adminOnly: true },
+    // Notifikasi dihapus
   ];
 
   const filteredMenuItems = menuItems.filter(item => 
@@ -45,7 +45,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
       
       {/* Sidebar */}
       <div className={`
-        fixed top-0 left-0 z-50 w-64 h-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out border-r border-gray-100
+        fixed top-0 left-0 z-50 w-80 h-full bg-white shadow-xl transform transition-transform duration-300 ease-in-out border-r border-gray-100
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:inset-0
       `}>

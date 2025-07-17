@@ -427,27 +427,43 @@ const Activities: React.FC = () => {
         setAbsenSuccess(true);
         return;
       }
+
+      const absenData = {
+        kegiatan_id: selectedActivity.id,
+        user_id: user.id,
+        status: 'hadir', // sesuai validasi backend
+        waktu_cek: new Date().toISOString() // waktu absen
+      };
+
+      console.log('Sending attendance data:', absenData);
+      console.log('Selected Activity:', selectedActivity);
+      console.log('User:', user);
+      
       const res = await fetch('http://localhost:3000/kehadiran', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({
-          kegiatan_id: selectedActivity.id,
-          user_id: user.id,
-          status: 'hadir', // sesuai validasi backend
-          waktu_cek: new Date().toISOString() // waktu absen
-        })
+        body: JSON.stringify(absenData)
       });
+      
+      console.log('Attendance response status:', res.status);
+      
       let data = {};
       try {
         data = await res.json();
-      } catch (e) {}
+        console.log('Attendance response data:', data);
+      } catch (e) {
+        console.error('Error parsing attendance response:', e);
+      }
+      
       if (!res.ok) {
-        addAlert({ type: 'error', message: data.error || 'Gagal absen (400 Bad Request). Pastikan data yang dikirim sudah benar dan id tidak kosong.' });
+        console.error('Attendance creation failed:', data);
+        addAlert({ type: 'error', message: data.error || `Gagal absen (${res.status}). Pastikan data yang dikirim sudah benar dan id tidak kosong.` });
         throw new Error(data.error || 'Gagal absen');
       }
+      
       setAbsenSuccess(true);
       addAlert({ type: 'success', message: 'Absen berhasil!' });
       // Update attendees di UI (optimistic update)

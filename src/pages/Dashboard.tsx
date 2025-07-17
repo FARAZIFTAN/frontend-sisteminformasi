@@ -152,29 +152,31 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {stats.map((stat, index) => {
-          const Icon = stat.icon;
-          return (
-            <div key={index} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-              <div className="flex items-center justify-between">
-                <div className={`bg-gradient-to-br ${stat.bgColor} rounded-xl p-3`}>
-                  <Icon className={`h-6 w-6 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} />
+      {/* Stats Cards - Hanya untuk Admin */}
+      {user?.role === 'admin' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {stats.map((stat, index) => {
+            const Icon = stat.icon;
+            return (
+              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex items-center justify-between">
+                  <div className={`bg-gradient-to-br ${stat.bgColor} rounded-xl p-3`}>
+                    <Icon className={`h-6 w-6 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} />
+                  </div>
+                  <div className="flex items-center space-x-1 text-green-600 text-sm font-medium">
+                    <ArrowUpRight className="h-4 w-4" />
+                    <span>{stat.change}</span>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-1 text-green-600 text-sm font-medium">
-                  <ArrowUpRight className="h-4 w-4" />
-                  <span>{stat.change}</span>
+                <div className="mt-4">
+                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
                 </div>
               </div>
-              <div className="mt-4">
-                <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
 
       {/* Recent Activities */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
@@ -247,12 +249,14 @@ const Dashboard: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900 mb-6">
           Aksi Cepat
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
-            <Calendar className="h-10 w-10 text-orange-600 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-semibold text-gray-900 mb-2">Buat Kegiatan</h3>
-            <p className="text-sm text-gray-600">Tambah kegiatan baru untuk UKM</p>
-          </button>
+        <div className={`grid grid-cols-1 ${user?.role === 'admin' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-6`}>
+          {user?.role === 'admin' && (
+            <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
+              <Calendar className="h-10 w-10 text-orange-600 mb-4 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-gray-900 mb-2">Buat Kegiatan</h3>
+              <p className="text-sm text-gray-600">Tambah kegiatan baru untuk UKM</p>
+            </button>
+          )}
           
           <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-green-50 hover:border-green-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
             <UserCheck className="h-10 w-10 text-green-600 mb-4 group-hover:scale-110 transition-transform" />
@@ -260,11 +264,13 @@ const Dashboard: React.FC = () => {
             <p className="text-sm text-gray-600">Tandai kehadiran peserta</p>
           </button>
           
-          <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
-            <TrendingUp className="h-10 w-10 text-purple-600 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-semibold text-gray-900 mb-2">Lihat Statistik</h3>
-            <p className="text-sm text-gray-600">Analisis kegiatan UKM</p>
-          </button>
+          {user?.role === 'admin' && (
+            <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
+              <TrendingUp className="h-10 w-10 text-purple-600 mb-4 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-gray-900 mb-2">Lihat Statistik</h3>
+              <p className="text-sm text-gray-600">Analisis kegiatan UKM</p>
+            </button>
+          )}
         </div>
       </div>
     </div>

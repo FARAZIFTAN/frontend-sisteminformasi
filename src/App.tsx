@@ -8,6 +8,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Activities from './pages/Activities';
+import Members from './pages/Members';
+import Statistics from './pages/Statistics';
 
 const AppContent: React.FC = () => {
   const { user } = useAuth();
@@ -31,20 +33,19 @@ const AppContent: React.FC = () => {
       case 'attendance':
         return <Kehadiran />;
       case 'members':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Manajemen Anggota</h2>
-            <p className="text-gray-600">Fitur manajemen anggota sedang dalam pengembangan.</p>
-          </div>
-        );
+        return <Members />;
       case 'statistics':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Statistik</h2>
-            <p className="text-gray-600">Fitur statistik sedang dalam pengembangan.</p>
-          </div>
-        );
+        return <Statistics />;
       case 'settings':
+        // Hanya admin yang dapat mengakses pengaturan
+        if (user?.role !== 'admin') {
+          return (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Akses Ditolak</h2>
+              <p className="text-gray-600">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+            </div>
+          );
+        }
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Pengaturan</h2>

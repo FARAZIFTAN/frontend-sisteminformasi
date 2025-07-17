@@ -25,7 +25,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
     { id: 'activities', label: 'Kegiatan', icon: Calendar, adminOnly: false },
     { id: 'attendance', label: 'Kehadiran', icon: UserCheck, adminOnly: false },
     { id: 'members', label: 'Anggota', icon: Users, adminOnly: true },
-    { id: 'statistics', label: 'Statistik', icon: BarChart3, adminOnly: false },
+    { id: 'statistics', label: 'Statistik', icon: BarChart3, adminOnly: true },
     { id: 'settings', label: 'Pengaturan', icon: Settings, adminOnly: true },
   ];
 

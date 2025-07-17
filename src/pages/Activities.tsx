@@ -413,6 +413,11 @@ const Activities: React.FC = () => {
       addAlert({ type: 'error', message: 'ID user atau kegiatan kosong.' });
       return;
     }
+    // Validasi UKM user dan kegiatan
+    if (user.ukm !== selectedActivity.ukm) {
+      addAlert({ type: 'error', message: 'Anda hanya bisa absen pada kegiatan UKM yang sesuai dengan UKM Anda.' });
+      return;
+    }
     setAbsenLoading(true);
     try {
       // Cek jika sudah absen (berdasarkan attendees)
@@ -431,7 +436,8 @@ const Activities: React.FC = () => {
         body: JSON.stringify({
           kegiatan_id: selectedActivity.id,
           user_id: user.id,
-          status: 'present'
+          status: 'hadir', // sesuai validasi backend
+          waktu_cek: new Date().toISOString() // waktu absen
         })
       });
       let data = {};
@@ -497,6 +503,7 @@ const Activities: React.FC = () => {
               {getStatusText(selectedActivity?.status || 'upcoming')}
             </span>
           </div>
+          {/* Daftar kehadiran dan statistik telah dipindahkan ke halaman Kehadiran */}
         </div>
       </div>
       {/* Tombol absen untuk user non-admin */}

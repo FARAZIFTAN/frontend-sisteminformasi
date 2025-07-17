@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Kehadiran from './pages/Kehadiran';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AlertProvider } from './contexts/AlertContext';
 import Layout from './components/Layout/Layout';
@@ -28,12 +29,7 @@ const AppContent: React.FC = () => {
       case 'activities':
         return <Activities />;
       case 'attendance':
-        return (
-          <div className="bg-white rounded-lg shadow-sm p-6">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">Kehadiran</h2>
-            <p className="text-gray-600">Fitur kehadiran sedang dalam pengembangan.</p>
-          </div>
-        );
+        return <Kehadiran />;
       case 'members':
         return (
           <div className="bg-white rounded-lg shadow-sm p-6">

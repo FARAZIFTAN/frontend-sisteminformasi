@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { 
   Plus, 
   Search, 
-  Filter, 
   Eye, 
-  Edit3, 
-  Trash2,
   Calendar,
   Clock,
   MapPin,
-  Users,
-  Star
+  Users
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAlert } from '../contexts/AlertContext';
@@ -185,52 +181,52 @@ const Activities: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const handleEditActivity = (activity: Activity) => {
-    setSelectedActivity(activity);
-    setIsFormMode('edit');
-    setFormData({
-      title: activity.title || '',
-      description: activity.description || '',
-      date: activity.date || '',
-      time: activity.time || '',
-      location: activity.location || '',
-      ukm: activity.ukm || '',
-      maxParticipants: activity.maxParticipants !== undefined && activity.maxParticipants !== null ? activity.maxParticipants.toString() : '',
-      documentation: activity.documentation || ''
-    });
-    setIsModalOpen(true);
-  };
+  // const handleEditActivity = (activity: Activity) => {
+  //   setSelectedActivity(activity);
+  //   setIsFormMode('edit');
+  //   setFormData({
+  //     title: activity.title || '',
+  //     description: activity.description || '',
+  //     date: activity.date || '',
+  //     time: activity.time || '',
+  //     location: activity.location || '',
+  //     ukm: activity.ukm || '',
+  //     maxParticipants: activity.maxParticipants !== undefined && activity.maxParticipants !== null ? activity.maxParticipants.toString() : '',
+  //     documentation: activity.documentation || ''
+  //   });
+  //   setIsModalOpen(true);
+  // };
 
-  const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+  // const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
   // ...fungsi fetchActivities sudah didefinisikan di atas, hapus duplikasi...
 
-  const handleDeleteActivity = async (activityId: string) => {
-    if (!token) return;
-    if (window.confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
-      setDeleteLoadingId(activityId);
-      try {
-        const res = await fetch(`http://localhost:3000/kegiatan/${activityId}`, {
-          method: 'DELETE',
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || 'Gagal menghapus kegiatan');
-        }
-        await fetchActivities();
-        addAlert({
-          type: 'success',
-          message: 'Kegiatan berhasil dihapus'
-        });
-      } catch (err: any) {
-        addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
-      } finally {
-        setDeleteLoadingId(null);
-      }
-    }
-  };
+  // const handleDeleteActivity = async (activityId: string) => {
+  //   if (!token) return;
+  //   if (window.confirm('Apakah Anda yakin ingin menghapus kegiatan ini?')) {
+  //     setDeleteLoadingId(activityId);
+  //     try {
+  //       const res = await fetch(`http://localhost:3000/kegiatan/${activityId}`, {
+  //         method: 'DELETE',
+  //         headers: {
+  //           'Authorization': `Bearer ${token}`
+  //         }
+  //       });
+  //       if (!res.ok) {
+  //         const data = await res.json();
+  //         throw new Error(data.error || 'Gagal menghapus kegiatan');
+  //       }
+  //       await fetchActivities();
+  //       addAlert({
+  //         type: 'success',
+  //         message: 'Kegiatan berhasil dihapus'
+  //       });
+  //     } catch (err: any) {
+  //       addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
+  //     } finally {
+  //       setDeleteLoadingId(null);
+  //     }
+  //   }
+  // };
 
   const [submitLoading, setSubmitLoading] = useState(false);
   const handleSubmitForm = async (e: React.FormEvent) => {
@@ -332,6 +328,7 @@ const Activities: React.FC = () => {
             rows={4}
             className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200"
             required
+            placeholder="Deskripsi kegiatan"
           />
         </div>
         
@@ -451,7 +448,7 @@ const Activities: React.FC = () => {
       
       console.log('Attendance response status:', res.status);
       
-      let data = {};
+      let data: any = {};
       try {
         data = await res.json();
         console.log('Attendance response data:', data);
@@ -461,8 +458,8 @@ const Activities: React.FC = () => {
       
       if (!res.ok) {
         console.error('Attendance creation failed:', data);
-        addAlert({ type: 'error', message: data.error || `Gagal absen (${res.status}). Pastikan data yang dikirim sudah benar dan id tidak kosong.` });
-        throw new Error(data.error || 'Gagal absen');
+        addAlert({ type: 'error', message: (data && data.error) ? data.error : `Gagal absen (${res.status}). Pastikan data yang dikirim sudah benar dan id tidak kosong.` });
+        throw new Error((data && data.error) ? data.error : 'Gagal absen');
       }
       
       setAbsenSuccess(true);

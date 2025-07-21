@@ -24,6 +24,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
     { id: 'dashboard', label: 'Dashboard', icon: Home, adminOnly: false },
     { id: 'activities', label: 'Kegiatan', icon: Calendar, adminOnly: false },
     { id: 'attendance', label: 'Kehadiran', icon: UserCheck, adminOnly: false },
+    { id: 'kategori', label: 'Kategori', icon: Settings, adminOnly: true },
     { id: 'members', label: 'Anggota', icon: Users, adminOnly: true },
     { id: 'statistics', label: 'Statistik', icon: BarChart3, adminOnly: true },
     // Notifikasi dihapus

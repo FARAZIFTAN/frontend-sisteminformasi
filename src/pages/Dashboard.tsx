@@ -11,7 +11,6 @@ import {
   Activity
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-import { useAlert } from '../contexts/AlertContext';
 import { Activity as ActivityType } from '../types';
 
 // Mock data for demonstration
@@ -19,7 +18,6 @@ import { Activity as ActivityType } from '../types';
 
 const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const { addAlert } = useAlert();
   const [activities, setActivities] = useState<ActivityType[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +44,8 @@ const Dashboard: React.FC = () => {
             status: item.status || '',
             attendees: Array.isArray(item.attendees) ? item.attendees : [],
             maxParticipants: typeof item.maxParticipants === 'number' ? item.maxParticipants : (parseInt(item.maxParticipants) || ''),
+            category: item.kategori || item.ukm || '',
+            createdBy: item.createdBy || '',
           })));
         } else {
           setActivities([]);
@@ -230,7 +230,7 @@ const Dashboard: React.FC = () => {
                       </div>
                     </div>
                   </div>
-                  <button className="ml-4 p-3 text-gray-400 hover:text-orange-600 rounded-xl hover:bg-orange-50 transition-colors">
+                  <button className="ml-4 p-3 text-gray-400 hover:text-orange-600 rounded-xl hover:bg-orange-50 transition-colors" title="Lihat Detail Kegiatan">
                     <Eye className="h-5 w-5" />
                   </button>
                 </div>

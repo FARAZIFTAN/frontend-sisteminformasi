@@ -10,6 +10,7 @@ import Dashboard from './pages/Dashboard';
 import Activities from './pages/Activities';
 import Members from './pages/Members';
 import Statistics from './pages/Statistics';
+import KategoriPage from './pages/Kategori';
 
 const AppContent: React.FC = () => {
   const { user } = useAuth();
@@ -32,6 +33,17 @@ const AppContent: React.FC = () => {
         return <Activities />;
       case 'attendance':
         return <Kehadiran />;
+      case 'kategori':
+        // Hanya admin yang dapat mengakses kategori
+        if (user?.role !== 'admin') {
+          return (
+            <div className="bg-white rounded-lg shadow-sm p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">Akses Ditolak</h2>
+              <p className="text-gray-600">Anda tidak memiliki izin untuk mengakses halaman ini.</p>
+            </div>
+          );
+        }
+        return <KategoriPage />;
       case 'members':
         return <Members />;
       case 'statistics':

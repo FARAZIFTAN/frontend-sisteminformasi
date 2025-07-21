@@ -88,59 +88,60 @@ const KategoriPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-5xl mx-auto p-8 space-y-8">
+    <div className="w-full max-w-3xl mx-auto p-6 space-y-8">
       {/* Card Header */}
-      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white flex items-center justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold mb-2 flex items-center">
-            <span className="mr-2">🗂️</span> Manajemen Kategori UKM
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 mb-6 relative overflow-hidden">
+        <div className="flex-1">
+          <h1 className="text-3xl font-bold mb-2 flex items-center drop-shadow">
+            <span className="mr-3 text-4xl">🗂️</span> Manajemen Kategori UKM
           </h1>
-          <p className="text-orange-100 text-lg">Tambah, edit, dan hapus kategori UKM kampus secara mudah. Hanya admin yang dapat mengelola data ini.</p>
+          <p className="text-orange-100 text-lg">Tambah, edit, dan hapus kategori UKM kampus secara mudah. <span className="font-semibold">Hanya admin</span> yang dapat mengelola data ini.</p>
         </div>
-        <div className="flex space-x-2">
+        <div className="flex flex-col md:flex-row gap-2 items-center bg-white bg-opacity-10 rounded-xl p-4 shadow-inner">
           <Input
             value={newKategori}
             onChange={e => setNewKategori(e.target.value)}
             placeholder="Nama kategori baru"
-            className="w-48"
+            className="w-52 bg-white bg-opacity-80 text-gray-900 placeholder-gray-400 border-0 focus:ring-2 focus:ring-orange-300"
           />
-          <Button onClick={handleAdd} color="orange">Tambah</Button>
+          <Button onClick={handleAdd} color="orange" className="w-full md:w-auto font-semibold shadow-md">Tambah</Button>
         </div>
+        <div className="absolute right-0 bottom-0 w-32 h-32 bg-white opacity-10 rounded-full -mb-10 -mr-10"></div>
       </div>
 
       {/* Tabel Kategori */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-0 overflow-hidden">
         <table className="w-full text-left">
-          <thead>
+          <thead className="bg-gradient-to-r from-orange-50 to-orange-100">
             <tr>
-              <th className="py-3 px-4 text-orange-700 text-base font-semibold">Nama Kategori</th>
-              <th className="py-3 px-4 text-orange-700 text-base font-semibold">Aksi</th>
+              <th className="py-4 px-6 text-orange-700 text-base font-bold tracking-wide">Nama Kategori</th>
+              <th className="py-4 px-6 text-orange-700 text-base font-bold tracking-wide text-center">Aksi</th>
             </tr>
           </thead>
           <tbody>
             {kategoriList.length === 0 ? (
-              <tr><td colSpan={2} className="py-6 text-center text-gray-400">Belum ada kategori.</td></tr>
+              <tr><td colSpan={2} className="py-8 text-center text-gray-400 text-lg">Belum ada kategori.</td></tr>
             ) : kategoriList.map(k => (
-              <tr key={k.id || k.nama_kategori} className="hover:bg-orange-50 transition-all">
-                <td className="py-3 px-4">
+              <tr key={k.id || k.nama_kategori} className="hover:bg-orange-50 transition-all group">
+                <td className="py-4 px-6 align-middle">
                   {editId === k.id ? (
                     <Input
                       value={editNama}
                       onChange={e => setEditNama(e.target.value)}
                       placeholder="Edit nama kategori"
-                      className="w-48"
+                      className="w-52 border-orange-300 focus:ring-2 focus:ring-orange-400"
                     />
                   ) : (
-                    <span className="font-medium text-gray-800 text-base">{k.nama_kategori}</span>
+                    <span className="font-semibold text-gray-800 text-base group-hover:text-orange-600 transition-colors">{k.nama_kategori}</span>
                   )}
                 </td>
-                <td className="py-3 px-4 space-x-2">
+                <td className="py-4 px-6 align-middle text-center space-x-2">
                   {editId === k.id ? (
-                    <Button onClick={handleUpdate} color="green">Simpan</Button>
+                    <Button onClick={handleUpdate} color="green" className="font-semibold px-4">Simpan</Button>
                   ) : (
-                    <Button onClick={() => handleEdit(k.id!, k.nama_kategori)} color="blue">Edit</Button>
+                    <Button onClick={() => handleEdit(k.id!, k.nama_kategori)} color="blue" className="font-semibold px-4">Edit</Button>
                   )}
-                  <Button onClick={() => handleDelete(k.id!)} color="red">Hapus</Button>
+                  <Button onClick={() => handleDelete(k.id!)} color="red" className="font-semibold px-4">Hapus</Button>
                 </td>
               </tr>
             ))}

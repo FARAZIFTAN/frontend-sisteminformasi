@@ -55,6 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
           <button
             onClick={onClose}
             className="p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-colors"
+            title="Tutup menu sidebar"
           >
             <X className="h-6 w-6" />
           </button>

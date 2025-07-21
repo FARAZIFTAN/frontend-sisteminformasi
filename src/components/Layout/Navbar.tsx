@@ -17,6 +17,7 @@ const Navbar: React.FC<NavbarProps> = ({ onToggleSidebar }) => {
             <button
               onClick={onToggleSidebar}
               className="lg:hidden p-2 rounded-md text-gray-600 hover:text-orange-600 hover:bg-orange-50 focus:outline-none focus:ring-2 focus:ring-orange-500 transition-colors"
+              title="Buka/tutup menu sidebar"
             >
               <Menu className="h-6 w-6" />
             </button>

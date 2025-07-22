@@ -1,0 +1,200 @@
+/* Custom animations and utilities */
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Add fade-in animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.animate-slideIn {
+  animation: slideIn 0.3s ease-out;
+}
+
+.animate-pulse-gentle {
+  animation: pulse 2s infinite;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Improved scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ea580c, #f97316);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(to bottom, #dc2626, #ea580c);
+}
+
+/* Improved focus styles */
+.focus-ring {
+  @apply focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2;
+}
+
+/* Card hover effects */
+.card-hover {
+  @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+}
+
+/* Gradient backgrounds */
+.bg-gradient-orange {
+  background: linear-gradient(135deg, #ea580c 0%, #f97316 50%, #fb923c 100%);
+}
+
+.bg-gradient-blue {
+  background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 50%, #1e40af 100%);
+}
+
+.bg-gradient-purple {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 50%, #6d28d9 100%);
+}
+
+/* Loading skeleton */
+.skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.skeleton-text {
+  @apply skeleton h-4 w-full mb-2;
+}
+
+.skeleton-title {
+  @apply skeleton h-6 w-3/4 mb-4;
+}
+
+/* Better shadows */
+.shadow-soft {
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+}
+
+.shadow-medium {
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.1);
+}
+
+.shadow-strong {
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.12);
+}
+
+/* Improved button variants */
+.btn-primary {
+  @apply bg-gradient-to-r from-orange-500 to-orange-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg shadow-orange-200 hover:from-orange-600 hover:to-orange-700 focus-ring transition-all duration-200 transform hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-white text-orange-600 font-semibold py-2 px-4 rounded-xl border border-orange-200 hover:bg-orange-50 focus-ring transition-all duration-200 transform hover:scale-105;
+}
+
+.btn-danger {
+  @apply bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold py-2 px-4 rounded-xl shadow-lg shadow-red-200 hover:from-red-600 hover:to-red-700 focus-ring transition-all duration-200 transform hover:scale-105;
+}
+
+/* Improved form styles */
+.input-field {
+  @apply w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all duration-200;
+}
+
+.input-field:focus {
+  @apply shadow-lg;
+}
+
+/* Status badges */
+.badge-success {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800;
+}
+
+.badge-warning {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800;
+}
+
+.badge-error {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800;
+}
+
+.badge-info {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800;
+}
+
+/* Loading states */
+.loading-dots::after {
+  content: '';
+  animation: loading-dots 1.5s infinite;
+}
+
+@keyframes loading-dots {
+  0%, 20% {
+    content: '.';
+  }
+  40% {
+    content: '..';
+  }
+  60%, 100% {
+    content: '...';
+  }
+}
+
+/* Responsive utilities */
+@media (max-width: 640px) {
+  .mobile-padding {
+    @apply px-4 py-2;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .dark-mode {
+    @apply bg-gray-900 text-white;
+  }
+}

@@ -376,17 +376,27 @@ const Members: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Manajemen Anggota</h1>
-          <p className="text-gray-600 mt-2">Kelola data anggota UKM</p>
+    <div className="space-y-8 -ml-24 lg:-ml-32 mt-6">
+      {/* Header dengan Background Orange */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-10 rounded-2xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white drop-shadow-sm">Manajemen Anggota</h1>
+              <p className="text-orange-100 text-lg mt-2">Kelola data anggota UKM</p>
+            </div>
+            <Button 
+              onClick={handleCreateMember} 
+              className="mt-4 sm:mt-0 bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 border-2 border-orange-500 hover:border-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold"
+            >
+              <UserPlus className="h-4 w-4 mr-2" />
+              Tambah Anggota
+            </Button>
+          </div>
         </div>
-        <Button onClick={handleCreateMember} className="mt-4 sm:mt-0" size="lg">
-          <UserPlus className="h-5 w-5 mr-2" />
-          Tambah Anggota
-        </Button>
       </div>
 
       {/* Stats */}

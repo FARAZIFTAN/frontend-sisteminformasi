@@ -18,13 +18,13 @@ import Modal from '../components/UI/Modal';
 
 const Activities: React.FC = () => {
   const { user, token } = useAuth();
+  const { addAlert } = useAlert();
   
   // Log status user dan token untuk debugging
   useEffect(() => {
     console.log("User:", user);
     console.log("Token tersedia:", !!token);
   }, [user, token]);
-  const { addAlert } = useAlert();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -48,25 +48,52 @@ const Activities: React.FC = () => {
 
   // Fetch kategori dari backend, tapi gunakan sebagai UKM
   const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([]);
+  
   useEffect(() => {
-    fetch('http://localhost:3000/kategori')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setUkmOptions(data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori })));
+    const fetchUkmOptions = async () => {
+      if (!token) return;
+      
+      try {
+        const res = await fetch('http://localhost:3000/kategori', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data)) {
+            setUkmOptions(data.map((k: { nama_kategori: string }) => ({ 
+              value: k.nama_kategori, 
+              label: k.nama_kategori 
+            })));
+          }
         }
-      })
-      .catch(() => setUkmOptions([]));
-  }, []);
+      } catch (error) {
+        console.error('Error fetching UKM options:', error);
+        setUkmOptions([]);
+      }
+    };
+
+    fetchUkmOptions();
+  }, [token]);
 
   // Fungsi fetchActivities tunggal dan konsisten
   const fetchActivities = async () => {
+    // Cek apakah user login dan token tersedia
+    if (!user || !token) {
+      console.log("User atau token tidak tersedia, tidak melakukan fetch");
+      return;
+    }
+
     setLoading(true);
     setError(null);
     try {
       const res = await fetch('http://localhost:3000/kegiatan', {
         headers: {
-          'Authorization': token ? `Bearer ${token}` : ''
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       });
       if (!res.ok) {
@@ -536,26 +563,48 @@ const Activities: React.FC = () => {
     </div>
   );
 
+  // Jika tidak ada user atau token, tampilkan pesan
+  if (!user || !token) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-center">
+          <p className="text-gray-600">Anda harus login untuk mengakses halaman ini.</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 -ml-24 lg:-ml-32 mt-6">
       {loading && (
         <div className="text-center text-orange-600 font-semibold">Memuat data kegiatan...</div>
       )}
       {error && (
         <div className="text-center text-red-600 font-semibold">{error}</div>
       )}
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Kelola Kegiatan</h1>
-          <p className="text-gray-600 mt-2">Atur dan pantau semua kegiatan UKM</p>
+      
+      {/* Header dengan Background Orange */}
+      <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-black opacity-10 rounded-2xl"></div>
+        <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-10 rounded-full -mr-16 -mt-16"></div>
+        <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-10 rounded-full -ml-12 -mb-12"></div>
+        <div className="relative z-10">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-white drop-shadow-sm">Kelola Kegiatan</h1>
+              <p className="text-orange-100 text-lg mt-2">Atur dan pantau semua kegiatan UKM</p>
+            </div>
+            {user?.role === 'admin' && (
+              <Button 
+                onClick={handleCreateActivity} 
+                className="mt-4 sm:mt-0 bg-orange-500 text-white hover:bg-orange-600 active:bg-orange-700 border-2 border-orange-500 hover:border-orange-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 font-semibold"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Tambah Kegiatan
+              </Button>
+            )}
+          </div>
         </div>
-        {user?.role === 'admin' && (
-          <Button onClick={handleCreateActivity} className="mt-4 sm:mt-0" size="lg">
-            <Plus className="h-5 w-5 mr-2" />
-            Tambah Kegiatan
-          </Button>
-        )}
       </div>
 
       {/* Filters */}

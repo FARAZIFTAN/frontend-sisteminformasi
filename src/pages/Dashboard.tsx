@@ -130,7 +130,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 -ml-24 lg:-ml-32 mt-6">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10 rounded-2xl"></div>
@@ -245,26 +245,26 @@ const Dashboard: React.FC = () => {
         <h2 className="text-xl font-bold text-gray-900 mb-6">
           Aksi Cepat
         </h2>
-        <div className={`grid grid-cols-1 ${user?.role === 'admin' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-6`}>
+        <div className={`grid grid-cols-1 ${user?.role === 'admin' ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4`}>
           {user?.role === 'admin' && (
-            <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-orange-50 hover:border-orange-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
-              <Calendar className="h-10 w-10 text-orange-600 mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="font-semibold text-gray-900 mb-2">Buat Kegiatan</h3>
-              <p className="text-sm text-gray-600">Tambah kegiatan baru untuk UKM</p>
+            <button className="p-4 border-2 border-gray-200 rounded-lg hover:bg-orange-50 hover:border-orange-300 active:bg-orange-100 active:border-orange-400 transition-all duration-200 text-left group transform hover:-translate-y-1 active:translate-y-0">
+              <Calendar className="h-8 w-8 text-orange-600 mb-3 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-gray-900 mb-1 text-sm">Buat Kegiatan</h3>
+              <p className="text-xs text-gray-600">Tambah kegiatan baru untuk UKM</p>
             </button>
           )}
           
-          <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-green-50 hover:border-green-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
-            <UserCheck className="h-10 w-10 text-green-600 mb-4 group-hover:scale-110 transition-transform" />
-            <h3 className="font-semibold text-gray-900 mb-2">Absen Kegiatan</h3>
-            <p className="text-sm text-gray-600">Tandai kehadiran peserta</p>
+          <button className="p-4 border-2 border-gray-200 rounded-lg hover:bg-green-50 hover:border-green-300 active:bg-green-100 active:border-green-400 transition-all duration-200 text-left group transform hover:-translate-y-1 active:translate-y-0">
+            <UserCheck className="h-8 w-8 text-green-600 mb-3 group-hover:scale-110 transition-transform" />
+            <h3 className="font-semibold text-gray-900 mb-1 text-sm">Absen Kegiatan</h3>
+            <p className="text-xs text-gray-600">Tandai kehadiran peserta</p>
           </button>
           
           {user?.role === 'admin' && (
-            <button className="p-6 border-2 border-gray-200 rounded-xl hover:bg-purple-50 hover:border-purple-300 transition-all duration-300 text-left group transform hover:-translate-y-1">
-              <TrendingUp className="h-10 w-10 text-purple-600 mb-4 group-hover:scale-110 transition-transform" />
-              <h3 className="font-semibold text-gray-900 mb-2">Lihat Statistik</h3>
-              <p className="text-sm text-gray-600">Analisis kegiatan UKM</p>
+            <button className="p-4 border-2 border-gray-200 rounded-lg hover:bg-purple-50 hover:border-purple-300 active:bg-purple-100 active:border-purple-400 transition-all duration-200 text-left group transform hover:-translate-y-1 active:translate-y-0">
+              <TrendingUp className="h-8 w-8 text-purple-600 mb-3 group-hover:scale-110 transition-transform" />
+              <h3 className="font-semibold text-gray-900 mb-1 text-sm">Lihat Statistik</h3>
+              <p className="text-xs text-gray-600">Analisis kegiatan UKM</p>
             </button>
           )}
         </div>

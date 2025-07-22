@@ -88,7 +88,7 @@ const KategoriPage: React.FC = () => {
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto p-6 space-y-8">
+    <div className="w-full max-w-none space-y-8 -ml-24 lg:-ml-32 mt-6">
       {/* Card Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white flex flex-col md:flex-row items-center justify-between gap-6 mb-6 relative overflow-hidden">
         <div className="flex-1">

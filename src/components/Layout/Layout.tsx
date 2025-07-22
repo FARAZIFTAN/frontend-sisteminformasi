@@ -23,20 +23,18 @@ const Layout: React.FC<LayoutProps> = ({ children, activeTab, onTabChange }) => 
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-orange-50/30 to-gray-50">
       <Navbar onToggleSidebar={handleToggleSidebar} />
       
-      <div className="flex pt-16">
-        <Sidebar 
-          isOpen={sidebarOpen}
-          onClose={handleCloseSidebar}
-          activeTab={activeTab}
-          onTabChange={onTabChange}
-        />
-        
-        <main className="flex-1 lg:ml-48 transition-all duration-300 ease-in-out">
-          <div className="animate-fadeIn">
-            {children}
-          </div>
-        </main>
-      </div>
+      <Sidebar 
+        isOpen={sidebarOpen}
+        onClose={handleCloseSidebar}
+        activeTab={activeTab}
+        onTabChange={onTabChange}
+      />
+      
+      <main className="flex-1 lg:ml-80 pt-16 transition-all duration-300 ease-in-out">
+        <div className="animate-fadeIn">
+          {children}
+        </div>
+      </main>
       
       {/* Background decoration */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden -z-10">

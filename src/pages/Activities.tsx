@@ -575,7 +575,7 @@ const Activities: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 -ml-24 lg:-ml-32 mt-6">
+    <div className="space-y-8 p-6 mt-0">
       {loading && (
         <div className="text-center text-orange-600 font-semibold">Memuat data kegiatan...</div>
       )}

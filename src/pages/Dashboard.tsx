@@ -130,7 +130,7 @@ const Dashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-8 -ml-24 lg:-ml-32 mt-6">
+    <div className="space-y-8 p-6 mt-0">
       {/* Header */}
       <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-2xl shadow-xl p-8 text-white relative overflow-hidden">
         <div className="absolute inset-0 bg-black opacity-10 rounded-2xl"></div>

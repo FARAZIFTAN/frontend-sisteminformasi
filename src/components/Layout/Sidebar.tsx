@@ -6,7 +6,6 @@ import {
   BarChart3, 
   Settings,
   Home,
-  X,
   ChevronRight
 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -46,29 +45,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose, activeTab, onTabChan
       
       {/* Sidebar */}
       <div className={`
-        fixed top-0 left-0 z-50 w-80 h-full bg-white/95 backdrop-blur-sm shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-100
+        fixed top-16 left-0 z-40 w-80 h-[calc(100vh-4rem)] bg-white/95 backdrop-blur-sm shadow-2xl transform transition-all duration-300 ease-in-out border-r border-gray-100 overflow-y-auto
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:inset-0 lg:bg-white
+        lg:translate-x-0 lg:bg-white
       `}>
-        {/* Mobile Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-100 lg:hidden">
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center text-white font-bold">
-              🎓
-            </div>
-            <span className="text-lg font-bold text-gray-900">Menu</span>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-gray-600 hover:text-orange-600 hover:bg-orange-50 transition-all duration-200"
-            title="Tutup menu sidebar"
-          >
-            <X className="h-6 w-6" />
-          </button>
-        </div>
-        
         {/* Navigation Menu */}
-        <nav className="mt-16 lg:mt-8 px-4 pb-4">
+        <nav className="mt-8 px-4 pb-4">
           <div className="space-y-3">
             {filteredMenuItems.map((item, index) => {
               const Icon = item.icon;

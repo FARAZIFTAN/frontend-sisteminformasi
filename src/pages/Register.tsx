@@ -28,7 +28,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
 
   useEffect(() => {
     // Fetch kategori dari backend
-    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori')
+    fetch('https://backend-sisteminformasi-production.up.railway.app/kategori')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {

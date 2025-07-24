@@ -48,7 +48,7 @@ const Activities: React.FC = () => {
     if (!token || !deleteConfirmId) return;
     setDeleteLoadingId(deleteConfirmId);
     try {
-      const res = await fetch(`http://backend-sisteminformasi-production.up.railway.app/kegiatan/${deleteConfirmId}`, {
+      const res = await fetch(`https://backend-sisteminformasi-production.up.railway.app/kegiatan/${deleteConfirmId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -108,7 +108,7 @@ const Activities: React.FC = () => {
       if (!token) return;
       
       try {
-        const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kategori', {
+        const res = await fetch('https://backend-sisteminformasi-production.up.railway.app/kategori', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -144,7 +144,7 @@ const Activities: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kegiatan', {
+      const res = await fetch('https://backend-sisteminformasi-production.up.railway.app/kegiatan', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -155,7 +155,7 @@ const Activities: React.FC = () => {
         throw new Error(data.error || 'Gagal mengambil data kegiatan');
       }
       const data = await res.json();
-      setActivities(data.map((item: Record<string, unknown>) => {
+      setActivities(data.map((item: Record<string, any>) => {
         // Mapping field dengan fallback dan normalisasi tipe data
         return {
           id: item.id || item._id || item.id_kegiatan || '',
@@ -165,7 +165,7 @@ const Activities: React.FC = () => {
           time: item.waktu || item.time || '',
           location: item.lokasi || item.location || '',
           ukm: item.kategori || item.ukm || '',
-          maxParticipants: typeof item.maxParticipants === 'number' ? item.maxParticipants : (parseInt(item.maxParticipants) || ''),
+          maxParticipants: typeof item.maxParticipants === 'number' ? item.maxParticipants : (item.maxParticipants ? parseInt(item.maxParticipants) : undefined),
           documentation: item.dokumentasi_url || item.documentation || '',
           status: item.status || '',
           attendees: Array.isArray(item.attendees) ? item.attendees : [],
@@ -345,7 +345,7 @@ const Activities: React.FC = () => {
         console.log("Mengirim data kegiatan baru:", body);
         console.log("Token:", token);
         
-        const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kegiatan', {
+        const res = await fetch('https://backend-sisteminformasi-production.up.railway.app/kegiatan', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -366,7 +366,7 @@ const Activities: React.FC = () => {
         await fetchActivities();
         addAlert({ type: 'success', message: 'Kegiatan berhasil dibuat' });
       } else if (isFormMode === 'edit' && selectedActivity) {
-        const res = await fetch(`http://backend-sisteminformasi-production.up.railway.app/kegiatan/${selectedActivity.id}`, {
+        const res = await fetch(`https://backend-sisteminformasi-production.up.railway.app/kegiatan/${selectedActivity.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -527,7 +527,7 @@ const Activities: React.FC = () => {
       console.log('Selected Activity:', selectedActivity);
       console.log('User:', user);
       
-      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kehadiran', {
+      const res = await fetch('https://backend-sisteminformasi-production.up.railway.app/kehadiran', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -559,7 +559,13 @@ const Activities: React.FC = () => {
       setAbsenSuccess(true);
       addAlert({ type: 'success', message: 'Absen berhasil!' });
       // Update attendees di UI (optimistic update)
-      setActivities(prev => prev.map(act => act.id === selectedActivity.id ? { ...act, attendees: [...(act.attendees || []), user.id] } : act));
+      setActivities(prev =>
+        prev.map(act =>
+          act.id === (selectedActivity ? selectedActivity.id : '')
+            ? { ...act, attendees: Array.isArray(act.attendees) ? [...act.attendees, user.id] : [user.id] }
+            : act
+        )
+      );
     } catch (err) {
       if (err instanceof Error) {
         addAlert({ type: 'error', message: err.message || 'Gagal absen' });

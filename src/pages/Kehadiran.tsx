@@ -28,7 +28,7 @@ const Kehadiran: React.FC = () => {
     
     try {
       console.log('Fetching attendance data...');
-      const response = await fetch('http://backend-sisteminformasi-production.up.railway.app/kehadiran', {
+      const response = await fetch('https://backend-sisteminformasi-production.up.railway.app/kehadiran', {
         headers: {
           'Authorization': `Bearer ${token}`
         }

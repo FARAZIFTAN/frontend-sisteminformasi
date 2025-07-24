@@ -49,36 +49,16 @@ const Statistics: React.FC = () => {
   const { addAlert } = useAlert();
   const [statistics, setStatistics] = useState<StatisticsData | null>(null);
   const [loading, setLoading] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState('all');
-  const [selectedUkm, setSelectedUkm] = useState('all');
-
-  const periodOptions = [
-    { value: 'all', label: 'Semua Periode' },
-    { value: 'thisMonth', label: 'Bulan Ini' },
-    { value: 'lastMonth', label: 'Bulan Lalu' },
-    { value: 'thisYear', label: 'Tahun Ini' },
-    { value: 'lastYear', label: 'Tahun Lalu' }
-  ];
-
-  const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: 'all', label: 'Semua UKM' }]);
-
-  useEffect(() => {
-    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori')
-      .then(res => res.json())
-      .then(data => {
-        if (Array.isArray(data)) {
-          setUkmOptions([{ value: 'all', label: 'Semua UKM' }, ...data.map((k: any) => ({ value: k.nama_kategori, label: k.nama_kategori }))]);
-        }
-      })
-      .catch(() => setUkmOptions([{ value: 'all', label: 'Semua UKM' }]));
-  }, []);
+  // Periode filter dihapus
+  // Filter UKM dihapus
 
   const fetchStatistics = useCallback(async () => {
     if (!token) return;
     setLoading(true);
     try {
-      // Fetch statistics from dedicated endpoint
-      const response = await fetch('http://backend-sisteminformasi-production.up.railway.app/statistics', {
+      // Build query params (UKM filter dihapus)
+      const url = `https://backend-sisteminformasi-production.up.railway.app/statistics`;
+      const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 
@@ -159,23 +139,7 @@ const Statistics: React.FC = () => {
         </div>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Select
-            label="Periode"
-            value={selectedPeriod}
-            onChange={(e) => setSelectedPeriod(e.target.value)}
-            options={periodOptions}
-          />
-          <Select
-            label="UKM"
-            value={selectedUkm}
-            onChange={(e) => setSelectedUkm(e.target.value)}
-            options={ukmOptions}
-          />
-        </div>
-      </div>
+      {/* Filter dihapus sesuai permintaan */}
 
       {loading ? (
         <div className="flex items-center justify-center py-12">

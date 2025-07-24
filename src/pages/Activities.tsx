@@ -17,6 +17,56 @@ import Select from '../components/UI/Select';
 import Modal from '../components/UI/Modal';
 
 const Activities: React.FC = () => {
+  // State untuk konfirmasi delete
+  const [deleteLoadingId, setDeleteLoadingId] = useState<string | null>(null);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+
+  // Handler Edit
+  const handleEditActivity = (activity: Activity) => {
+    setSelectedActivity(activity);
+    setIsFormMode('edit');
+    setFormData({
+      title: activity.title || '',
+      description: activity.description || '',
+      date: activity.date || '',
+      time: activity.time || '',
+      location: activity.location || '',
+      ukm: activity.ukm || '',
+      maxParticipants: activity.maxParticipants !== undefined && activity.maxParticipants !== null ? activity.maxParticipants.toString() : '',
+      documentation: activity.documentation || ''
+    });
+    setIsModalOpen(true);
+  };
+
+  // Handler Delete
+  const handleDeleteActivity = (activityId: string) => {
+    setDeleteConfirmId(activityId);
+  };
+
+  // Proses Delete
+  const confirmDeleteActivity = async () => {
+    if (!token || !deleteConfirmId) return;
+    setDeleteLoadingId(deleteConfirmId);
+    try {
+      const res = await fetch(`http://localhost:3000/kegiatan/${deleteConfirmId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Gagal menghapus kegiatan');
+      }
+      await fetchActivities();
+      addAlert({ type: 'success', message: 'Kegiatan berhasil dihapus' });
+      setDeleteConfirmId(null);
+    } catch (err: any) {
+      addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
+    } finally {
+      setDeleteLoadingId(null);
+    }
+  };
   const { user, token } = useAuth();
   const { addAlert } = useAlert();
   
@@ -679,8 +729,29 @@ const Activities: React.FC = () => {
                   >
                     <Eye className="h-4 w-4" />
                   </button>
-                  {/* Tombol edit dan hapus hanya untuk admin */}
-                  {/* ...hanya admin yang bisa edit dan hapus... */}
+                  {user?.role === 'admin' && (
+                    <>
+                      <button
+                        onClick={() => handleEditActivity(activity)}
+                        className="p-2 text-blue-400 hover:text-blue-600 rounded-lg hover:bg-blue-50 transition-colors"
+                        title="Edit Kegiatan"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm0 0V17h4" /></svg>
+                      </button>
+                      <button
+                        onClick={() => handleDeleteActivity(activity.id)}
+                        className="p-2 text-red-400 hover:text-red-600 rounded-lg hover:bg-red-50 transition-colors"
+                        title="Hapus Kegiatan"
+                        disabled={deleteLoadingId === activity.id}
+                      >
+                        {deleteLoadingId === activity.id ? (
+                          <span className="animate-spin h-4 w-4 border-2 border-red-400 border-t-transparent rounded-full inline-block"></span>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                        )}
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -688,7 +759,7 @@ const Activities: React.FC = () => {
         ))}
       </div>
 
-      {/* Modal */}
+      {/* Modal Edit & Detail */}
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -701,6 +772,24 @@ const Activities: React.FC = () => {
       >
         {isFormMode === 'view' ? renderActivityDetails() : renderActivityForm()}
       </Modal>
+
+      {/* Modal Konfirmasi Delete */}
+      {deleteConfirmId && (
+        <Modal
+          isOpen={true}
+          onClose={() => setDeleteConfirmId(null)}
+          title="Hapus Kegiatan"
+          size="sm"
+        >
+          <div className="space-y-4">
+            <p>Apakah Anda yakin ingin menghapus kegiatan ini?</p>
+            <div className="flex justify-end space-x-2">
+              <Button variant="outline" onClick={() => setDeleteConfirmId(null)} disabled={deleteLoadingId === deleteConfirmId}>Batal</Button>
+              <Button variant="danger" onClick={confirmDeleteActivity} loading={deleteLoadingId === deleteConfirmId} disabled={deleteLoadingId === deleteConfirmId}>Hapus</Button>
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

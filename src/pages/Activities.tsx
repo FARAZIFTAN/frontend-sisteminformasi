@@ -48,7 +48,7 @@ const Activities: React.FC = () => {
     if (!token || !deleteConfirmId) return;
     setDeleteLoadingId(deleteConfirmId);
     try {
-      const res = await fetch(`http://localhost:3000/kegiatan/${deleteConfirmId}`, {
+      const res = await fetch(`http://backend-sisteminformasi-production.up.railway.app/kegiatan/${deleteConfirmId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -61,8 +61,12 @@ const Activities: React.FC = () => {
       await fetchActivities();
       addAlert({ type: 'success', message: 'Kegiatan berhasil dihapus' });
       setDeleteConfirmId(null);
-    } catch (err: any) {
-      addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
+    } catch (err) {
+      if (err instanceof Error) {
+        addAlert({ type: 'error', message: err.message || 'Gagal menghapus kegiatan' });
+      } else {
+        addAlert({ type: 'error', message: 'Gagal menghapus kegiatan' });
+      }
     } finally {
       setDeleteLoadingId(null);
     }
@@ -104,7 +108,7 @@ const Activities: React.FC = () => {
       if (!token) return;
       
       try {
-        const res = await fetch('http://localhost:3000/kategori', {
+        const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kategori', {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json'
@@ -140,7 +144,7 @@ const Activities: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch('http://localhost:3000/kegiatan', {
+      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kegiatan', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -151,7 +155,7 @@ const Activities: React.FC = () => {
         throw new Error(data.error || 'Gagal mengambil data kegiatan');
       }
       const data = await res.json();
-      setActivities(data.map((item: any) => {
+      setActivities(data.map((item: Record<string, unknown>) => {
         // Mapping field dengan fallback dan normalisasi tipe data
         return {
           id: item.id || item._id || item.id_kegiatan || '',
@@ -167,9 +171,14 @@ const Activities: React.FC = () => {
           attendees: Array.isArray(item.attendees) ? item.attendees : [],
         };
       }));
-    } catch (err: any) {
-      setError(err.message || 'Gagal mengambil data kegiatan');
-      addAlert({ type: 'error', message: err.message || 'Gagal mengambil data kegiatan' });
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message || 'Gagal mengambil data kegiatan');
+        addAlert({ type: 'error', message: err.message || 'Gagal mengambil data kegiatan' });
+      } else {
+        setError('Gagal mengambil data kegiatan');
+        addAlert({ type: 'error', message: 'Gagal mengambil data kegiatan' });
+      }
     } finally {
       setLoading(false);
     }
@@ -317,7 +326,7 @@ const Activities: React.FC = () => {
     setSubmitLoading(true);
     try {
       // Siapkan body request tanpa field undefined/null
-      const body: any = {
+      const body: Record<string, unknown> = {
         judul: formData.title, // title -> judul
         deskripsi: formData.description, // description -> deskripsi
         tanggal: formData.date, // date -> tanggal
@@ -336,7 +345,7 @@ const Activities: React.FC = () => {
         console.log("Mengirim data kegiatan baru:", body);
         console.log("Token:", token);
         
-        const res = await fetch('http://localhost:3000/kegiatan', {
+        const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kegiatan', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -357,7 +366,7 @@ const Activities: React.FC = () => {
         await fetchActivities();
         addAlert({ type: 'success', message: 'Kegiatan berhasil dibuat' });
       } else if (isFormMode === 'edit' && selectedActivity) {
-        const res = await fetch(`http://localhost:3000/kegiatan/${selectedActivity.id}`, {
+        const res = await fetch(`http://backend-sisteminformasi-production.up.railway.app/kegiatan/${selectedActivity.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -375,8 +384,12 @@ const Activities: React.FC = () => {
         addAlert({ type: 'success', message: 'Kegiatan berhasil diperbarui' });
       }
       setIsModalOpen(false);
-    } catch (err: any) {
-      addAlert({ type: 'error', message: err.message || 'Gagal memproses kegiatan' });
+    } catch (err) {
+      if (err instanceof Error) {
+        addAlert({ type: 'error', message: err.message || 'Gagal memproses kegiatan' });
+      } else {
+        addAlert({ type: 'error', message: 'Gagal memproses kegiatan' });
+      }
     } finally {
       setSubmitLoading(false);
     }
@@ -514,7 +527,7 @@ const Activities: React.FC = () => {
       console.log('Selected Activity:', selectedActivity);
       console.log('User:', user);
       
-      const res = await fetch('http://localhost:3000/kehadiran', {
+      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/kehadiran', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -525,7 +538,7 @@ const Activities: React.FC = () => {
       
       console.log('Attendance response status:', res.status);
       
-      let data: any = {};
+      let data: unknown = {};
       try {
         data = await res.json();
         console.log('Attendance response data:', data);
@@ -534,17 +547,25 @@ const Activities: React.FC = () => {
       }
       
       if (!res.ok) {
+        let errorMsg = `Gagal absen (${res.status}). Pastikan data yang dikirim sudah benar dan id tidak kosong.`;
+        if (data && typeof data === 'object' && 'error' in data && typeof (data as any).error === 'string') {
+          errorMsg = (data as any).error;
+        }
         console.error('Attendance creation failed:', data);
-        addAlert({ type: 'error', message: (data && data.error) ? data.error : `Gagal absen (${res.status}). Pastikan data yang dikirim sudah benar dan id tidak kosong.` });
-        throw new Error((data && data.error) ? data.error : 'Gagal absen');
+        addAlert({ type: 'error', message: errorMsg });
+        throw new Error(errorMsg);
       }
       
       setAbsenSuccess(true);
       addAlert({ type: 'success', message: 'Absen berhasil!' });
       // Update attendees di UI (optimistic update)
       setActivities(prev => prev.map(act => act.id === selectedActivity.id ? { ...act, attendees: [...(act.attendees || []), user.id] } : act));
-    } catch (err: any) {
-      addAlert({ type: 'error', message: err.message || 'Gagal absen' });
+    } catch (err) {
+      if (err instanceof Error) {
+        addAlert({ type: 'error', message: err.message || 'Gagal absen' });
+      } else {
+        addAlert({ type: 'error', message: 'Gagal absen' });
+      }
     } finally {
       setAbsenLoading(false);
     }

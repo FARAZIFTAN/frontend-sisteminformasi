@@ -47,7 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string): Promise<boolean> => {
     setIsLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/login', {
+      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
@@ -78,7 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         alert('Password tidak boleh kosong');
         return false;
       }
-      const res = await fetch('http://localhost:3000/register', {
+      const res = await fetch('http://backend-sisteminformasi-production.up.railway.app/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

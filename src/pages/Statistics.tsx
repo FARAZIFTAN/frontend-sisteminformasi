@@ -63,7 +63,7 @@ const Statistics: React.FC = () => {
   const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: 'all', label: 'Semua UKM' }]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/kategori')
+    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -78,7 +78,7 @@ const Statistics: React.FC = () => {
     setLoading(true);
     try {
       // Fetch statistics from dedicated endpoint
-      const response = await fetch('http://localhost:3000/statistics', {
+      const response = await fetch('http://backend-sisteminformasi-production.up.railway.app/statistics', {
         headers: { 'Authorization': `Bearer ${token}` }
       });
 

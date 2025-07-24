@@ -18,7 +18,7 @@ const KategoriPage: React.FC = () => {
   const [editNama, setEditNama] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:3000/kategori', {
+    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori', {
       headers: {
         'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
       }
@@ -29,7 +29,7 @@ const KategoriPage: React.FC = () => {
 
   const handleAdd = () => {
     if (!newKategori.trim()) return addAlert({ message: 'Nama kategori wajib diisi', type: 'error' });
-    fetch('http://localhost:3000/kategori', {
+    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -52,7 +52,7 @@ const KategoriPage: React.FC = () => {
 
   const handleUpdate = () => {
     if (!editNama.trim() || !editId) return addAlert({ message: 'Nama kategori wajib diisi', type: 'error' });
-    fetch(`http://localhost:3000/kategori/${editId}`, {
+    fetch(`http://backend-sisteminformasi-production.up.railway.app/kategori/${editId}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -71,7 +71,7 @@ const KategoriPage: React.FC = () => {
 
   const handleDelete = (id: string) => {
     if (!window.confirm('Yakin ingin menghapus kategori ini?')) return;
-    fetch(`http://localhost:3000/kategori/${id}`, {
+    fetch(`http://backend-sisteminformasi-production.up.railway.app/kategori/${id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''

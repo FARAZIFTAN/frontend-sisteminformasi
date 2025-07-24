@@ -60,7 +60,7 @@ const Members: React.FC = () => {
   const [ukmOptions, setUkmOptions] = useState<{ value: string; label: string }[]>([{ value: '', label: 'Semua UKM' }]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/kategori')
+    fetch('http://backend-sisteminformasi-production.up.railway.app/kategori')
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) {
@@ -74,7 +74,7 @@ const Members: React.FC = () => {
     if (!token) return;
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:3000/users', {
+      const response = await fetch('http://backend-sisteminformasi-production.up.railway.app/users', {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -141,7 +141,7 @@ const Members: React.FC = () => {
     
     setDeleteLoading(memberId);
     try {
-      const response = await fetch(`http://localhost:3000/users/${memberId}`, {
+      const response = await fetch(`http://backend-sisteminformasi-production.up.railway.app/users/${memberId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -188,7 +188,7 @@ const Members: React.FC = () => {
       };
 
       if (isFormMode === 'create') {
-        const response = await fetch('http://localhost:3000/users', {
+        const response = await fetch('http://backend-sisteminformasi-production.up.railway.app/users', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -206,7 +206,7 @@ const Members: React.FC = () => {
           addAlert({ type: 'error', message: data.error || 'Gagal menambahkan anggota' });
         }
       } else if (isFormMode === 'edit' && selectedMember) {
-        const response = await fetch(`http://localhost:3000/users/${selectedMember.id}`, {
+        const response = await fetch(`http://backend-sisteminformasi-production.up.railway.app/users/${selectedMember.id}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',

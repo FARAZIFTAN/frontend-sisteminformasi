@@ -25,7 +25,7 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     setLoading(true);
     setError(null);
-    fetch('http://localhost:3000/kegiatan', {
+    fetch('http://backend-sisteminformasi-production.up.railway.app/kegiatan', {
       headers: {
         'Authorization': localStorage.getItem('token') ? `Bearer ${localStorage.getItem('token')}` : ''
       }

@@ -194,33 +194,7 @@ const Statistics: React.FC = () => {
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            {/* Status Distribution */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center mb-6">
-                <PieChart className="h-6 w-6 text-gray-600 mr-3" />
-                <h3 className="text-xl font-bold text-gray-900">Status Kegiatan</h3>
-              </div>
-              <div className="space-y-4">
-                {Object.entries(statistics.kegiatanByStatus).map(([status, count]) => (
-                  <div key={status} className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className={`w-3 h-3 rounded-full mr-3 ${getStatusColor(status).split(' ')[1]}`}></div>
-                      <span className="capitalize text-gray-700">
-                        {status === 'upcoming' ? 'Akan Datang' : 
-                         status === 'ongoing' ? 'Berlangsung' :
-                         status === 'completed' ? 'Selesai' : 'Dibatalkan'}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="font-semibold text-gray-900 mr-2">{count}</span>
-                      <span className="text-sm text-gray-500">
-                        ({statistics.totalKegiatan > 0 ? Math.round((count / statistics.totalKegiatan) * 100) : 0}%)
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            {/* Status Distribution dihapus sesuai permintaan */}
 
             {/* UKM Distribution */}
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">

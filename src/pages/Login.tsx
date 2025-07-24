@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Eye, EyeOff, LogIn, GraduationCap, Mail, Lock } from 'lucide-react';
+import { Eye, EyeOff, LogIn, GraduationCap, Mail, Lock, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useAlert } from '../contexts/AlertContext';
 import Button from '../components/UI/Button';
@@ -14,34 +14,31 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [submitted, setSubmitted] = useState(false);
   
   const { login, isLoading } = useAuth();
   const { addAlert } = useAlert();
 
   const validateForm = () => {
     const newErrors: { email?: string; password?: string } = {};
-    
-    if (!email) {
-      newErrors.email = 'Email harus diisi';
+    if (!email.trim()) {
+      newErrors.email = 'Silakan masukkan email Anda.';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      newErrors.email = 'Format email tidak valid';
+      newErrors.email = 'Format email tidak valid. Contoh: user@email.com';
     }
-    
     if (!password) {
-      newErrors.password = 'Password harus diisi';
+      newErrors.password = 'Silakan masukkan password.';
     } else if (password.length < 6) {
-      newErrors.password = 'Password minimal 6 karakter';
+      newErrors.password = 'Password minimal 6 karakter.';
     }
-    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    setSubmitted(true);
     if (!validateForm()) return;
-
     try {
       const success = await login(email, password);
       if (success) {
@@ -101,18 +98,24 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="nama@email.com"
-                error={errors.email}
+                error={submitted ? errors.email : undefined}
                 leftIcon={<Mail className="h-5 w-5" />}
                 required
               />
-              
+              {submitted && errors.email && (
+                <div className="flex items-center mt-1 text-xs text-red-600 animate-fadeIn">
+                  <AlertCircle className="h-4 w-4 mr-1" />
+                  {errors.email}
+                </div>
+              )}
+
               <Input
                 label="Password"
                 type={showPassword ? 'text' : 'password'}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Masukkan password Anda"
-                error={errors.password}
+                error={submitted ? errors.password : undefined}
                 leftIcon={<Lock className="h-5 w-5" />}
                 rightIcon={
                   <button
@@ -145,7 +148,7 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
 
             <Button
               type="submit"
-              size="lg"
+              size="md"
               loading={isLoading}
               className="w-full"
               icon={<LogIn className="h-5 w-5" />}
@@ -154,22 +157,6 @@ const Login: React.FC<LoginProps> = ({ onSwitchToRegister }) => {
             </Button>
           </form>
 
-          {/* Demo Credentials */}
-          <div className="mt-8 p-4 bg-gradient-to-r from-orange-50 to-amber-50 rounded-2xl border border-orange-100">
-            <h4 className="text-sm font-semibold text-gray-700 mb-3">Demo Credentials:</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-              <div className="bg-white p-3 rounded-xl shadow-sm">
-                <p className="font-medium text-purple-600">👑 Admin</p>
-                <p className="text-gray-600">admin@ukm.ac.id</p>
-                <p className="text-gray-600">admin123</p>
-              </div>
-              <div className="bg-white p-3 rounded-xl shadow-sm">
-                <p className="font-medium text-blue-600">👤 Member</p>
-                <p className="text-gray-600">member@ukm.ac.id</p>
-                <p className="text-gray-600">member123</p>
-              </div>
-            </div>
-          </div>
         </div>
 
         {/* Register Link */}

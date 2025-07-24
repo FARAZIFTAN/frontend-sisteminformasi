@@ -53,6 +53,8 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
       newErrors.email = 'Email harus diisi';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
       newErrors.email = 'Format email tidak valid';
+    } else if (!formData.email.endsWith('@gmail.com')) {
+      newErrors.email = 'Email harus menggunakan domain @gmail.com';
     }
     
     if (!formData.password) {
@@ -157,7 +159,7 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
               value={formData.email}
               onChange={(e) => handleInputChange('email', e.target.value)}
               error={errors.email}
-              placeholder="nama@ulbi.ac.id"
+              placeholder="nama@gmail.com"
               required
             />
             
@@ -210,12 +212,14 @@ const Register: React.FC<RegisterProps> = ({ onSwitchToLogin }) => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full flex items-center justify-center"
               loading={isLoading}
-              size="lg"
+              size="md"
             >
-              <UserPlus className="h-5 w-5 mr-2" />
-              Daftar Sekarang
+              <span className="flex items-center">
+                <UserPlus className="h-5 w-5 mr-2" />
+                Daftar Sekarang
+              </span>
             </Button>
           </form>
 

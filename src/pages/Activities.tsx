@@ -698,11 +698,7 @@ const Activities: React.FC = () => {
             />
           </div>
           
-          <Select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            options={statusOptions}
-          />
+          {/* Filter status dihapus sesuai permintaan */}
           
           <Select
             value={ukmFilter}
@@ -726,9 +722,7 @@ const Activities: React.FC = () => {
                     {activity.description}
                   </p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(activity.status)} ml-2`}>
-                  {getStatusText(activity.status)}
-                </span>
+                {/* Status kegiatan dihapus */}
               </div>
               
               <div className="space-y-3 mb-4">

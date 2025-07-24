@@ -60,44 +60,7 @@ const Dashboard: React.FC = () => {
     ? activities
     : activities.filter(a => a.ukm === user?.ukm);
 
-  const stats = [
-    {
-      name: 'Total Kegiatan',
-      value: visibleActivities.length,
-      icon: Calendar,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'from-orange-50 to-orange-100',
-      change: '+12%',
-      changeType: 'increase'
-    },
-    {
-      name: 'Kegiatan Mendatang',
-      value: visibleActivities.filter(a => a.status === 'upcoming').length,
-      icon: Clock,
-      color: 'from-blue-500 to-blue-600',
-      bgColor: 'from-blue-50 to-blue-100',
-      change: '+8%',
-      changeType: 'increase'
-    },
-    {
-      name: 'Kegiatan Selesai',
-      value: visibleActivities.filter(a => a.status === 'completed').length,
-      icon: UserCheck,
-      color: 'from-green-500 to-green-600',
-      bgColor: 'from-green-50 to-green-100',
-      change: '+15%',
-      changeType: 'increase'
-    },
-    {
-      name: 'Total Peserta',
-      value: visibleActivities.reduce((acc, activity) => acc + (Array.isArray(activity.attendees) ? activity.attendees.length : 0), 0),
-      icon: Users,
-      color: 'from-purple-500 to-purple-600',
-      bgColor: 'from-purple-50 to-purple-100',
-      change: '+23%',
-      changeType: 'increase'
-    }
-  ];
+  // Stats cards dihapus sesuai permintaan
 
   const getStatusBadge = (status: ActivityType['status']) => {
     switch (status) {
@@ -150,31 +113,7 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* Stats Cards - Hanya untuk Admin */}
-      {user?.role === 'admin' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <div key={index} className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="flex items-center justify-between">
-                  <div className={`bg-gradient-to-br ${stat.bgColor} rounded-xl p-3`}>
-                    <Icon className={`h-6 w-6 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} />
-                  </div>
-                  <div className="flex items-center space-x-1 text-green-600 text-sm font-medium">
-                    <ArrowUpRight className="h-4 w-4" />
-                    <span>{stat.change}</span>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-600">{stat.name}</p>
-                  <p className="text-3xl font-bold text-gray-900 mt-1">{stat.value}</p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
+      {/* Stats Cards dihapus sesuai permintaan */}
 
       {/* Recent Activities */}
       <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
@@ -198,9 +137,7 @@ const Dashboard: React.FC = () => {
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-3">
                       <h3 className="font-semibold text-gray-900 text-lg group-hover:text-orange-600 transition-colors">{activity.title}</h3>
-                      <span className={`px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadge(activity.status)}`}>
-                        {getStatusText(activity.status)}
-                      </span>
+                      {/* Status kegiatan dihapus */}
                     </div>
                     <p className="text-gray-600 mb-4">{activity.description}</p>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-500">

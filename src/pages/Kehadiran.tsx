@@ -174,7 +174,7 @@ const Kehadiran: React.FC = () => {
         {filteredAttendance.length > 0 && (
           <div className="bg-gray-50 px-6 py-3 border-t border-gray-200">
             <div className="text-sm text-gray-600">
-              Total: {filteredAttendance.length} data kehadiran
+              Total: {filteredAttendance.length} data kehadirann
             </div>
           </div>
         )}
